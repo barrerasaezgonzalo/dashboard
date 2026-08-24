@@ -6,6 +6,7 @@ import { NoteProvider } from "./providers/NoteProvider";
 import "./globals.css";
 import { ExpenseProvider } from "./providers/ExpenseProvider";
 import { HabitProvider } from "./providers/HabitProvider";
+import { WellnessProvider } from "./providers/WellnessProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <ExpenseProvider>
             <NoteProvider>
               <HabitProvider>
-                <TaskProvider>{children}</TaskProvider>
+                <WellnessProvider>
+                  <TaskProvider>{children}</TaskProvider>
+                </WellnessProvider>
               </HabitProvider>
             </NoteProvider>
           </ExpenseProvider>

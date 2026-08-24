@@ -84,3 +84,6 @@ export const dashboardLinks = [
 ];
 
 export const weekDays = ["L", "M", "X", "J", "V", "S", "D"];
+
+export const MAX_ANSWER = 5;
+export const MIN_ANSWER = 2;
