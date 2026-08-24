@@ -4,6 +4,8 @@ import { TaskProvider } from "./providers/TaskProvider";
 import { AuthProvider } from "./providers/AuthProvider";
 import { NoteProvider } from "./providers/NoteProvider";
 import "./globals.css";
+import { ExpenseProvider } from "./providers/ExpenseProvider";
+import { HabitProvider } from "./providers/HabitProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,9 +29,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
-          <NoteProvider>
-            <TaskProvider>{children}</TaskProvider>
-          </NoteProvider>
+          <ExpenseProvider>
+            <NoteProvider>
+              <HabitProvider>
+                <TaskProvider>{children}</TaskProvider>
+              </HabitProvider>
+            </NoteProvider>
+          </ExpenseProvider>
         </AuthProvider>
       </body>
     </html>

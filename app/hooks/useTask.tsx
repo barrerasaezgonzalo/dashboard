@@ -21,7 +21,7 @@ export function useTask() {
     selectedTask,
     setSelectedTask,
   } = context;
-  const [responseOperationMessage, setSuccessMessage] = useState("");
+  const [responseOperationMessage, setResponseOperationMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const todoTasks = tasks.filter((task) => task.status === "todo");
@@ -52,9 +52,9 @@ export function useTask() {
       important: data.important,
       status: "todo",
     });
-    setSuccessMessage("Tarea creada correctamente.");
+    setResponseOperationMessage("Tarea creada correctamente.");
     setTimeout(() => {
-      setSuccessMessage("");
+      setResponseOperationMessage("");
     }, 4000);
   };
 
@@ -68,19 +68,19 @@ export function useTask() {
       important: data.important,
     });
 
-    setSuccessMessage("Tarea actualizada correctamente.");
+    setResponseOperationMessage("Tarea actualizada correctamente.");
     setTimeout(() => {
-      setSuccessMessage("");
+      setResponseOperationMessage("");
     }, 4000);
   };
 
   const handleDeleteTask = async () => {
     if (!selectedTask) return;
     await deleteTask(selectedTask.id);
-    setSuccessMessage("Tarea eliminada correctamente.");
+    setResponseOperationMessage("Tarea eliminada correctamente.");
 
     setTimeout(() => {
-      setSuccessMessage("");
+      setResponseOperationMessage("");
     }, 4000);
     setIsDeleteModalOpen(false);
     setSelectedTask(null);

@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, X } from "lucide-react";
+import { CalendarDays, Save, X } from "lucide-react";
 
 import type { TaskModalProps } from "@/app/types";
 import { useTaskModal } from "@/app/hooks/useTaskModal";
@@ -140,8 +140,7 @@ export function TaskModal(props: TaskModalProps) {
             <button
               type="button"
               onClick={handleClose}
-              disabled={saving}
-              className="cursor-pointer rounded-lg border border-neutral-600 px-4 py-2 text-sm font-medium text-neutral-200 transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-lg border border-neutral-700 px-4 py-2 text-sm font-medium text-neutral-400 transition hover:bg-neutral-700"
             >
               Cancelar
             </button>
@@ -149,13 +148,11 @@ export function TaskModal(props: TaskModalProps) {
             <button
               type="submit"
               disabled={disabled}
-              className="cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-30"
+              className="flex items-center gap-2 cursor-pointer rounded-lg border border-tasks/50 bg-tasks/10  px-4 py-2 text-sm font-medium text-tasks transition hover:border-tasks disabled:cursor-not-allowed disabled:border-neutral-700 disabled:bg-neutral-700/20 disabled:text-neutral-600"
             >
-              {saving
-                ? "Guardando..."
-                : isEditing
-                  ? "Guardar cambios"
-                  : "Crear tarea"}
+              <Save size={16} />
+
+              {saving ? "Guardando..." : isEditing ? "Guardar" : "Crear"}
             </button>
           </footer>
         </form>

@@ -31,7 +31,7 @@ export function useNote() {
   const currentNote = selectedNote;
   const invalidTitle = isInvalidTitle(title);
   const disabledSave = invalidTitle;
-  const [responseOperationMessage, setSuccessMessage] = useState("");
+  const [responseOperationMessage, setResponseOperationMessage] = useState("");
 
   useEffect(() => {
     if (isNewNote) {
@@ -75,9 +75,9 @@ export function useNote() {
         content,
         important,
       });
-      setSuccessMessage("Nota creada correctamente.");
+      setResponseOperationMessage("Nota creada correctamente.");
       setTimeout(() => {
-        setSuccessMessage("");
+        setResponseOperationMessage("");
       }, 4000);
       setIsNewNote(false);
       return;
@@ -95,9 +95,9 @@ export function useNote() {
       content,
       important,
     });
-    setSuccessMessage("Nota actualizada correctamente.");
+    setResponseOperationMessage("Nota actualizada correctamente.");
     setTimeout(() => {
-      setSuccessMessage("");
+      setResponseOperationMessage("");
     }, 4000);
   };
 
@@ -121,9 +121,9 @@ export function useNote() {
 
     await deleteNote(currentNote.id);
 
-    setSuccessMessage("Nota eliminada correctamente.");
+    setResponseOperationMessage("Nota eliminada correctamente.");
     setTimeout(() => {
-      setSuccessMessage("");
+      setResponseOperationMessage("");
     }, 4000);
 
     setIsDeleteOpen(false);

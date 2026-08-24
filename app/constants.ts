@@ -82,3 +82,5 @@ export const dashboardLinks = [
     classNameSoft: "text-files/50",
   },
 ];
+
+export const weekDays = ["L", "M", "X", "J", "V", "S", "D"];

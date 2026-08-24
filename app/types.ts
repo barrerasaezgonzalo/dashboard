@@ -146,6 +146,71 @@ export type MapNoteProps = {
   important: boolean;
 };
 
+// Debts
+export type ExpenseStatus = "pending" | "paid";
+
+export type Expense = {
+  id: number;
+  user_id: string;
+  title: string;
+  paid_amount: number;
+  last_paid_amount: number;
+  status: ExpenseStatus;
+  month: number;
+  year: number;
+  created_at: string;
+};
+
+export type ExpenseItemProps = {
+  expense: Expense;
+  amount: string;
+  onAmountChange: (id: number, value: string) => void;
+  onPaid: (id: number, status: ExpenseStatus) => Promise<void>;
+};
+
+// Habits
+
+export type Habit = {
+  id: number;
+  user_id: string;
+  name: string;
+  days: boolean[];
+  completed: boolean[];
+  last_completed: number;
+  created_at: string;
+  last_reset_week: string | null;
+};
+
+export type HabitItemProps = {
+  habit: Habit;
+  currentDay: number;
+  onToggleCompleted: (habit: Habit, index: number) => Promise<void>;
+  onEdit: (habit: Habit) => void;
+  onDelete: (habit: Habit) => void;
+};
+
+export type HabitDayProps = {
+  habit: Habit;
+  index: number;
+  enabled: boolean;
+  currentDay: number;
+  weekDay: string;
+  onToggleCompleted: (habit: Habit, index: number) => Promise<void>;
+};
+
+export type HabitModalProps = {
+  isOpen: boolean;
+  habit: Habit | null;
+  name: string;
+  days: boolean[];
+  saving: boolean;
+  invalidHabit: boolean;
+  setName: React.Dispatch<React.SetStateAction<string>>;
+  onToggleDay: (index: number) => void;
+  onClose: () => void;
+  onSubmit: () => Promise<void>;
+};
+
 // WIP
 
 export type PlanTaskStatus = "pending" | "completed" | "rejected";
