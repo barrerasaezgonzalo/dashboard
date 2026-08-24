@@ -1,18 +1,7 @@
+// Tasks
+
 import { LucideIcon } from "lucide-react";
-
-export type MenuChild = {
-  label: string;
-  href: string;
-  icon: LucideIcon;
-};
-
-export type MenuItem = {
-  label: string;
-  href?: string;
-  icon: LucideIcon;
-  children?: MenuChild[];
-  description: string;
-};
+import { RefObject } from "react";
 
 export type TaskStatus = "todo" | "in_progress" | "done";
 
@@ -30,22 +19,19 @@ export type TaskGroupProps = {
   title: string;
   tasks: Task[];
   emptyMessage: string;
-  expandedTasks: number[];
   onNextStatus: (taskId: number) => void;
-  onToggleSummary: (taskId: number) => void;
   onEdit?: (task: Task) => void;
   onDelete?: (task: Task) => void;
-  selectedTaskId?: number;
+  className: string;
+  icon: LucideIcon;
 };
 
 export type TaskItemProps = {
   task: Task;
-  expanded: boolean;
-  onNextStatus: (taskId: number) => void;
-  onToggleSummary: (taskId: number) => void;
+  onNextStatus: (taskId: number, option: string) => void;
   onEdit?: (task: Task) => void;
   onDelete?: (task: Task) => void;
-  selected?: boolean;
+  confirming?: boolean;
 };
 
 export type TaskFormData = {
@@ -62,6 +48,39 @@ export type TaskModalProps = {
   onSubmit: (data: TaskFormData) => Promise<void> | void;
 };
 
+export type TaskStatusOption = {
+  status: TaskStatus;
+  title: string;
+  className: string;
+};
+
+export type TaskStatusMenuProps = {
+  taskId: number;
+  options: TaskStatusOption[];
+  onChangeStatus: (taskId: number, status: TaskStatus) => void;
+  onClose: () => void;
+};
+
+export type taskGroupConfigProps = {
+  status: TaskStatus;
+  title: string;
+  tasks: Task[];
+  emptyMessage: string;
+  icon: LucideIcon;
+  className: string;
+  bg: string;
+  border: string;
+};
+
+// UI
+
+export type SectionHeaderProps = {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  color: string;
+};
+
 export type ConfirmModalVariant = "info" | "warning";
 
 export type ConfirmModalProps = {
@@ -74,4 +93,66 @@ export type ConfirmModalProps = {
   onConfirm: () => void;
   onClose: () => void;
   showCancel?: boolean;
+};
+
+type ToastVariant = "success" | "error";
+
+export type ToastProps = {
+  message: string;
+  variant?: ToastVariant;
+  icon?: LucideIcon;
+};
+
+// Notes
+
+export type Note = {
+  id: number;
+  user_id: string;
+  title: string;
+  content: string;
+  important: boolean;
+};
+
+export type NoteFormProps = {
+  currentNote: Note | null;
+  title: string;
+  content: string;
+  important: boolean;
+  isNewNote: boolean;
+  invalidTitle: boolean;
+  disabledSave: boolean;
+  setTitle: (value: string) => void;
+  setContent: (value: string) => void;
+  handleSave: () => void;
+  handleNewNote: () => void;
+  handleImportant: () => void;
+  handleOpenDelete: () => void;
+};
+
+export type NoteListProps = {
+  notes: Note[];
+  currentNote: Note | null;
+  isNewNote: boolean;
+  scrollContainerRef: RefObject<HTMLDivElement | null>;
+  scroll: (direction: "left" | "right") => void;
+  handleSelectNote: (note: Note) => void;
+};
+
+export type MapNoteProps = {
+  id: number;
+  user_id: string;
+  title: string;
+  content: string | null;
+  important: boolean;
+};
+
+// WIP
+
+export type PlanTaskStatus = "pending" | "completed" | "rejected";
+
+export type PlanTask = {
+  id: number;
+  title: string;
+  day: number;
+  status: PlanTaskStatus;
 };

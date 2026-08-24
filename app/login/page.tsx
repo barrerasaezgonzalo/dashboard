@@ -2,9 +2,18 @@
 
 import { LogIn } from "lucide-react";
 import { useAuth } from "@/app/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LoginPage() {
-  const { loginWithGoogle, loading } = useAuth();
+  const router = useRouter();
+  const { loginWithGoogle, loading, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      router.replace("/");
+    }
+  }, [loading, isAuthenticated, router]);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-neutral-950 px-6 text-neutral-200">

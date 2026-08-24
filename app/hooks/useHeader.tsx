@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useTask } from "./useTask";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./useAuth";
+import { useNotifications } from "./useNotifications";
+import { useClickOutside } from "./useClickOutside";
 
 export function useHeader() {
-  const { overallProgress } = useTask();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { logout } = useAuth();
+  const { notifications, count } = useNotifications();
 
   const handleLogout = async () => {
     await logout();
@@ -17,10 +20,16 @@ export function useHeader() {
     router.replace("/login");
   };
 
+  useClickOutside(dropdownRef, () => setIsDropdownOpen(false));
+
   return {
-    overallProgress,
     setIsLogoutOpen,
     isLogoutOpen,
     handleLogout,
+    dropdownRef,
+    setIsDropdownOpen,
+    isDropdownOpen,
+    notifications,
+    count,
   };
 }

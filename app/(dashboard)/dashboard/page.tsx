@@ -1,5 +1,7 @@
-import { TaskSummary } from "@/app/components/Dashboard/TaskSummary";
+// app/(dashboard)/dashboard/page.tsx
 
-export default function Dashboard() {
-  return <TaskSummary />;
+import { Dashboard } from "./Dashboard";
+
+export default function Page() {
+  return <Dashboard />;
 }

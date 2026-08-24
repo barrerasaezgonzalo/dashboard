@@ -16,6 +16,8 @@ type TaskContextType = {
   changeTaskStatus: (id: number, status: TaskStatus) => Promise<void>;
   deleteTask: (id: number) => Promise<void>;
   loadTasks: () => Promise<void>;
+  selectedTask: Task | null;
+  setSelectedTask: (task: Task | null) => void;
 };
 
 export const TaskContext = createContext<TaskContextType | null>(null);
@@ -27,6 +29,7 @@ type TaskProviderProps = {
 export function TaskProvider({ children }: TaskProviderProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const loadTasks = async () => {
     try {
@@ -36,7 +39,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         .from("tasks")
         .select("*")
         .order("important", { ascending: false })
-        .order("date", { ascending: true })
+        .order("date", { ascending: false })
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -148,6 +151,8 @@ export function TaskProvider({ children }: TaskProviderProps) {
         changeTaskStatus,
         deleteTask,
         loadTasks,
+        selectedTask,
+        setSelectedTask,
       }}
     >
       {children}

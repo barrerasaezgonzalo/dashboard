@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { TaskProvider } from "./providers/TaskProvider";
 import { AuthProvider } from "./providers/AuthProvider";
+import { NoteProvider } from "./providers/NoteProvider";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +27,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
-          <TaskProvider>{children}</TaskProvider>
+          <NoteProvider>
+            <TaskProvider>{children}</TaskProvider>
+          </NoteProvider>
         </AuthProvider>
       </body>
     </html>

@@ -3,10 +3,6 @@
 import { useEffect, useState } from "react";
 import type { TaskModalProps } from "@/app/types";
 
-type FormErrors = {
-  title?: string;
-};
-
 export function useTaskModal({
   isOpen,
   onClose,
@@ -17,8 +13,6 @@ export function useTaskModal({
   const [summary, setSummary] = useState("");
   const [date, setDate] = useState("");
   const [important, setImportant] = useState(false);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
   const isEditing = Boolean(task);
 
@@ -27,8 +21,6 @@ export function useTaskModal({
     setSummary("");
     setDate("");
     setImportant(false);
-    setErrors({});
-    setFormError("");
   };
 
   useEffect(() => {
@@ -44,35 +36,13 @@ export function useTaskModal({
     }
   }, [isOpen, task]);
 
-  const validateForm = () => {
-    const newErrors: FormErrors = {};
-    if (!title.trim()) {
-      newErrors.title = "El título es obligatorio.";
-    }
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) {
-      setFormError("Revisa los campos obligatorios antes de guardar.");
-      return false;
-    }
-    setFormError("");
-    return true;
-  };
-
   const handleTitleChange = (value: string) => {
     setTitle(value);
-
-    if (errors.title) {
-      setErrors((current) => ({
-        ...current,
-        title: undefined,
-      }));
-    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!validateForm()) return;
+    if (title.trim().length < 5) return;
 
     try {
       setSaving(true);
@@ -87,7 +57,6 @@ export function useTaskModal({
       onClose();
     } catch (error) {
       console.error(error);
-      setFormError("Ocurrió un error al guardar la tarea.");
     } finally {
       setSaving(false);
     }
@@ -103,8 +72,6 @@ export function useTaskModal({
     summary,
     date,
     important,
-    errors,
-    formError,
     saving,
     isEditing,
     setSummary,

@@ -1,8 +1,10 @@
 "use client";
 
 import { useContext, useState } from "react";
-import { Task, TaskFormData, TaskStatus } from "../types";
+import { Task, TaskFormData, taskGroupConfigProps, TaskStatus } from "../types";
 import { TaskContext } from "../providers/TaskProvider";
+import { isDateOverdue } from "../utils";
+import { Circle, CircleGauge, Check } from "lucide-react";
 
 export function useTask() {
   const context = useContext(TaskContext);
@@ -10,38 +12,36 @@ export function useTask() {
   if (!context) {
     throw new Error("useTask debe usarse dentro de TaskProvider");
   }
-
-  const { tasks, changeTaskStatus, createTask, updateTask, deleteTask } =
-    context;
-
-  const [expandedTasks, setExpandedTasks] = useState<number[]>([]);
-  const [successMessage, setSuccessMessage] = useState("");
+  const {
+    tasks,
+    changeTaskStatus,
+    createTask,
+    updateTask,
+    deleteTask,
+    selectedTask,
+    setSelectedTask,
+  } = context;
+  const [responseOperationMessage, setSuccessMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const todoTasks = tasks.filter((task) => task.status === "todo");
   const inProgressTasks = tasks.filter((task) => task.status === "in_progress");
   const doneTasks = tasks.filter((task) => task.status === "done");
   const totalTasks = tasks.length;
-  const completedTasks = doneTasks.length;
-  const overallProgress =
-    totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const overdueTasks = tasks.filter((task) => {
+    return task.status !== "done" && !!task.date && isDateOverdue(task.date);
+  });
 
-  const handleNextStatus = (taskId: number) => {
+  const handleNextStatus = (taskId: number, status?: TaskStatus) => {
     const task = tasks.find((task) => task.id === taskId);
+
     if (!task) {
       return;
     }
-    const nextStatus = getNextStatus(task.status);
-    changeTaskStatus(taskId, nextStatus);
-  };
 
-  const handleToggleSummary = (taskId: number) => {
-    setExpandedTasks((current) =>
-      current.includes(taskId)
-        ? current.filter((id) => id !== taskId)
-        : [...current, taskId],
-    );
+    const nextStatus = status ?? getNextStatus(task.status);
+
+    changeTaskStatus(taskId, nextStatus);
   };
 
   const handleCreateTask = async (data: TaskFormData) => {
@@ -111,41 +111,51 @@ export function useTask() {
     return "todo";
   }
 
-  const taskGroups = [
+  const taskGroupConfig: taskGroupConfigProps[] = [
     {
+      status: "todo",
       title: "Pendientes",
       tasks: todoTasks,
       emptyMessage: "No tienes tareas pendientes.",
+      icon: Circle,
+      bg: "bg-neutral-500",
+      border: "border-neutral-500",
+      className: "bg-neutral-400 text-neutral-900",
     },
     {
+      status: "in_progress",
       title: "En progreso",
       tasks: inProgressTasks,
       emptyMessage: "No tienes tareas en progreso.",
+      icon: CircleGauge,
+      bg: "bg-cyan-400",
+      border: "border-cyan-400",
+      className: "bg-cyan-400 text-neutral-800",
     },
     {
+      status: "done",
       title: "Finalizadas",
       tasks: doneTasks,
       emptyMessage: "No tienes tareas finalizadas.",
+      icon: Check,
+      bg: "bg-green-700",
+      border: "border-green-700",
+      className: "bg-green-700 text-neutral-200",
     },
   ];
 
   return {
     tasks,
-    overallProgress,
-    completedTasks,
     totalTasks,
     todoTasks,
-    inProgressTasks,
-    doneTasks,
-    expandedTasks,
+    overdueTasks,
     handleNextStatus,
-    handleToggleSummary,
-    taskGroups,
+    taskGroupConfig,
     createTask,
     updateTask,
     deleteTask,
     handleOpenCreate,
-    successMessage,
+    responseOperationMessage,
     handleOpenEdit,
     handleOpenDelete,
     isModalOpen,
@@ -156,5 +166,7 @@ export function useTask() {
     isDeleteModalOpen,
     setIsDeleteModalOpen,
     handleDeleteTask,
+    setSelectedTask,
+    getNextStatus,
   };
 }
