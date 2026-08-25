@@ -2,6 +2,7 @@
 
 import { DashboardSection } from "@/app/components/Ui/DashboardSection";
 import { SectionHeader } from "@/app/components/Ui/SectionHeader";
+import { MAX_ANSWER } from "@/app/constants";
 import { useWellness } from "@/app/hooks/useWellness";
 import { CheckInBlockProps } from "@/app/types";
 
@@ -28,7 +29,7 @@ export function CheckInBlock({
       header={
         <SectionHeader
           title="Check In"
-          description="Contesta con honestidad para personalizar tu plan. Son tan solo un máximo de 5 preguntas, puedes generar tu plan desde la tercera respuesta."
+          description={`Contesta con honestidad para personalizar tu plan. Son tan solo un máximo de ${MAX_ANSWER} preguntas, puedes generar tu plan desde la tercera respuesta.`}
           icon={ListOrdered}
           color="wellness"
         />
@@ -60,15 +61,10 @@ export function CheckInBlock({
           <button
             type="button"
             disabled={
-              !canGeneratePlan ||
-              loadingQuestion ||
-              Boolean(activePlan) ||
-              isSubmitting
+              !canGeneratePlan || loadingQuestion || Boolean(activePlan)
             }
             onClick={async () => {
-              setIsSubmitting(true);
               await onGeneratePlan();
-              setIsSubmitting(false);
             }}
             className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-700 bg-neutral-900/60 px-3 py-3 text-sm font-medium transition text-wellness/80 hover:border-wellness/80 disabled:cursor-not-allowed disabled:border-neutral-700 disabled:opacity-50"
           >

@@ -7,9 +7,12 @@ import {
   FileImage,
   FileSpreadsheet,
   FileText,
-  Plus,
+  Upload,
+  X,
 } from "lucide-react";
 import { useState } from "react";
+import { SectionHeader } from "../../Ui/SectionHeader";
+import { DashboardSection } from "../../Ui/DashboardSection";
 
 type FileItem = {
   id: number;
@@ -77,23 +80,66 @@ export function Files() {
   };
 
   return (
-    <section
-      className="w-full min-w-0 rounded-xl border border-neutral-700 bg-neutral-800"
+    <DashboardSection
       id="files"
+      header={
+        <SectionHeader
+          title="Archivos"
+          description="Ten a mano lo que necesitas."
+          icon={File}
+          color="files"
+        />
+      }
     >
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-neutral-700 px-5 py-4">
-        <div className="min-w-0">
-          <h2 className="flex items-center gap-2 text-base font-semibold text-white">
-            <File size={20} className="text-sky-400" />
-            Archivos
-          </h2>
+      <div className="mx-4 mt-4 flex items-center gap-2">
+        <input
+          type="file"
+          className="border border-files rounded-lg w-full bg-neutral-900/60 p-3 text-sm leading-6 text-neutral-400 outline-none transition"
+        />
+        <button
+          type="button"
+          onClick={() => {}}
+          title="Subir"
+          className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-lg border bg-neutral-900/60 text-files/80 transition border-neutral-700 hover:border-files hover:text-files/80"
+        >
+          <Upload size={25} />
+        </button>
+      </div>
 
-          <p className="mt-1 text-sm text-neutral-500">
-            Ten a mano lo que necesitas.
-          </p>
-        </div>
+      <div className="grid grid-cols-2 gap-2 p-4">
+        {visibleFiles.map((file) => (
+          <div
+            key={file.id}
+            className="relative flex min-w-0 cursor-pointer items-start gap-3 rounded-lg border border-neutral-700/60 bg-neutral-900/20 p-3 pr-10 text-left transition hover:border-neutral-600 hover:bg-neutral-700/40"
+          >
+            <button
+              type="button"
+              onClick={() => {
+                // eliminar archivo
+              }}
+              className="absolute right-2 top-2 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-neutral-500 transition hover:bg-red-500/10 hover:text-red-400"
+              title="Eliminar archivo"
+            >
+              <X size={16} />
+            </button>
 
-        <div className="flex items-center gap-1">
+            <FileIcon type={file.type} />
+
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-neutral-200">
+                {file.name}
+              </p>
+
+              <p className="mt-1 line-clamp-2 text-xs leading-4 text-neutral-500">
+                {file.description}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between px-4 pb-4">
+        <div className="flex ml-auto items-center gap-1">
           <button
             type="button"
             onClick={handlePrevious}
@@ -113,57 +159,21 @@ export function Files() {
           </button>
         </div>
       </div>
-
-      <div className="grid grid-cols-2 gap-2 p-4">
-        {visibleFiles.map((file) => (
-          <button
-            key={file.id}
-            type="button"
-            className="flex min-w-0 cursor-pointer items-start gap-3 rounded-lg border border-neutral-700/60 bg-neutral-900/20 p-3 text-left transition hover:border-neutral-600 hover:bg-neutral-700/40"
-          >
-            <FileIcon type={file.type} />
-
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-neutral-200">
-                {file.name}
-              </p>
-
-              <p className="mt-1 line-clamp-2 text-xs leading-4 text-neutral-500">
-                {file.description}
-              </p>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      <div className="flex items-center justify-between px-4 pb-4">
-        <button
-          type="button"
-          onClick={() => {}}
-          className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-sky-500/10 px-2 py-3 text-xs font-medium text-sky-400 transition hover:bg-sky-500/20"
-        >
-          <Plus size={14} />
-          Agregar archivo
-        </button>
-      </div>
-    </section>
+    </DashboardSection>
   );
 }
 
 function FileIcon({ type }: { type: FileItem["type"] }) {
   if (type === "pdf") {
-    return <FileText size={18} className="mt-0.5 shrink-0 text-red-400" />;
+    return <FileText size={25} className="mt-0.5 shrink-0 text-red-400" />;
   }
-
   if (type === "image") {
-    return <FileImage size={18} className="mt-0.5 shrink-0 text-violet-400" />;
+    return <FileImage size={25} className="mt-0.5 shrink-0 text-violet-400" />;
   }
-
   if (type === "sheet") {
     return (
-      <FileSpreadsheet size={18} className="mt-0.5 shrink-0 text-green-400" />
+      <FileSpreadsheet size={25} className="mt-0.5 shrink-0 text-green-400" />
     );
   }
-
-  return <File size={18} className="mt-0.5 shrink-0 text-neutral-400" />;
+  return <File size={25} className="mt-0.5 shrink-0 text-neutral-400" />;
 }

@@ -179,6 +179,7 @@ export function WellnessProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     setActivePlan(null);
+    setLoading(false);
   };
 
   useEffect(() => {

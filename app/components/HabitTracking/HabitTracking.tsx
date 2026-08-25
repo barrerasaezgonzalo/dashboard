@@ -37,6 +37,16 @@ export function HabitTracking() {
   return (
     <DashboardSection
       id="habits"
+      button={
+        <button
+          type="button"
+          onClick={handleOpenCreate}
+          title="Nuevo hábito"
+          className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-neutral-700 bg-neutral-900/60 text-habits/50 transition hover:border-habits/80 hover:text-habits/80"
+        >
+          <SquarePlus size={25} />
+        </button>
+      }
       header={
         <SectionHeader
           title="Hábitos"
@@ -50,15 +60,6 @@ export function HabitTracking() {
         <div className="rounded-lg bg-cyan-500/10 px-3 py-1.5 text-sm font-medium text-cyan-400">
           {progress}%
         </div>
-
-        <button
-          type="button"
-          onClick={handleOpenCreate}
-          title="Nuevo hábito"
-          className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-neutral-700 bg-neutral-900/60 text-habits/50 transition hover:border-habits/80 hover:text-habits/80"
-        >
-          <SquarePlus size={25} />
-        </button>
       </div>
 
       <div className="p-4">

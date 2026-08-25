@@ -1,6 +1,6 @@
 "use client";
 
-import { SquarePlus, Save, Star, Trash } from "lucide-react";
+import { Save, Star, Trash } from "lucide-react";
 
 import type { NoteFormProps } from "@/app/types";
 
@@ -15,7 +15,6 @@ export function NoteForm({
   setTitle,
   setContent,
   handleSave,
-  handleNewNote,
   handleImportant,
   handleOpenDelete,
 }: NoteFormProps) {
@@ -54,15 +53,6 @@ export function NoteForm({
             size={18}
             className={important ? "fill-amber-400 text-amber-400" : ""}
           />
-        </button>
-
-        <button
-          type="button"
-          onClick={handleNewNote}
-          title="Nueva nota"
-          className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-neutral-700 bg-neutral-900/60 text-notes/50 transition hover:border-notes/80 hover:text-notes/80"
-        >
-          <SquarePlus size={25} />
         </button>
       </div>
 

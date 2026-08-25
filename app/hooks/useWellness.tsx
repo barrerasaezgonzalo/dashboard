@@ -105,12 +105,14 @@ export function useWellness() {
       summary: plan.summary,
       tasks: plan.tasks,
     });
+
+    resetCheckIn();
   };
 
   const resetCheckIn = () => {
     setMessages([]);
     setAnswer("");
-    setQuestion("");
+    setQuestion(checkInQuestions[0]);
   };
 
   useEffect(() => {
@@ -118,6 +120,10 @@ export function useWellness() {
       checkInQuestions[Math.floor(Math.random() * checkInQuestions.length)];
     setQuestion(randomQuestion);
   }, []);
+
+  useEffect(() => {
+    resetCheckIn;
+  }, [resetCheckIn]);
 
   return {
     activePlan,

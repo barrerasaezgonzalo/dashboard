@@ -3,10 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { TaskProvider } from "./providers/TaskProvider";
 import { AuthProvider } from "./providers/AuthProvider";
 import { NoteProvider } from "./providers/NoteProvider";
-import "./globals.css";
 import { ExpenseProvider } from "./providers/ExpenseProvider";
 import { HabitProvider } from "./providers/HabitProvider";
 import { WellnessProvider } from "./providers/WellnessProvider";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -1,6 +1,6 @@
 "use client";
 
-import { SquareText } from "lucide-react";
+import { SquarePlus, SquareText } from "lucide-react";
 
 import { ConfirmModal } from "@/app/components/Ui/ConfirmModal";
 import { useNote } from "@/app/hooks/useNote";
@@ -40,6 +40,16 @@ export function Notes() {
     <>
       <DashboardSection
         id="notes"
+        button={
+          <button
+            type="button"
+            onClick={handleNewNote}
+            title="Nueva nota"
+            className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-neutral-700 bg-neutral-900/60 text-notes/50 transition hover:border-notes/80 hover:text-notes/80"
+          >
+            <SquarePlus size={25} />
+          </button>
+        }
         header={
           <SectionHeader
             title="Notas"
@@ -60,7 +70,6 @@ export function Notes() {
           setTitle={setTitle}
           setContent={setContent}
           handleSave={handleSave}
-          handleNewNote={handleNewNote}
           handleImportant={handleImportant}
           handleOpenDelete={handleOpenDelete}
         />

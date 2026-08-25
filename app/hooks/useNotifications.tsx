@@ -1,19 +1,44 @@
 "use client";
 
-import { ListClock, ListTodo, Wallet } from "lucide-react";
+import { CalendarDays, ListClock, ListTodo, Wallet } from "lucide-react";
 import { useTask } from "./useTask";
 import { useExpense } from "./useExpense";
 import { useHabit } from "./useHabit";
+import { useCalendar } from "./useCalendar";
+import { parseDateYMD } from "../utils";
 
 export function useNotifications() {
   const { overdueTasks } = useTask();
   const { allExpenses } = useExpense();
   const { habits } = useHabit();
   const today = new Date();
+  const { events } = useCalendar();
+  const overdueEvents = events.filter((event) => {
+    const eventDate = parseDateYMD(event.date);
+    if (!eventDate) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return eventDate < today;
+  });
   const currentDay = today.getDay() === 0 ? 6 : today.getDay() - 1;
   const pendingExpenses = allExpenses.filter(
     (expense) => expense.status === "pending",
   );
+
+  const calendarNotifications =
+    overdueEvents.length > 0
+      ? [
+          {
+            id: "overdue-events",
+            icon: CalendarDays,
+            title:
+              overdueEvents.length === 1
+                ? "Tienes 1 evento retrasado"
+                : `Tienes ${overdueEvents.length} eventos retrasados`,
+          },
+        ]
+      : [];
+
   const expenseNotifications =
     pendingExpenses.length > 0
       ? [
@@ -62,6 +87,7 @@ export function useNotifications() {
     ...taskNotifications,
     ...expenseNotifications,
     ...habitNotifications,
+    ...calendarNotifications,
   ];
 
   return {

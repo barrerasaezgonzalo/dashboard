@@ -5,7 +5,7 @@ import {
   ListTodo,
   SquareText,
   Wallet,
-  File,
+  Sparkles,
 } from "lucide-react";
 
 export const checkInQuestions = [
@@ -75,15 +75,15 @@ export const dashboardLinks = [
     classNameSoft: "text-debts/50",
   },
   {
-    id: "files",
-    label: "Archivos",
-    icon: File,
-    className: "text-files",
-    classNameSoft: "text-files/50",
+    id: "prompt",
+    label: "Prompt",
+    icon: Sparkles,
+    className: "text-prompts",
+    classNameSoft: "text-prompts/50",
   },
 ];
 
 export const weekDays = ["L", "M", "X", "J", "V", "S", "D"];
 
-export const MAX_ANSWER = 5;
+export const MAX_ANSWER = 10;
 export const MIN_ANSWER = 2;

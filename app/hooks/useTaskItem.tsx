@@ -11,7 +11,6 @@ export function useTaskItem(task: Task) {
   const statusMenuRef = useRef<HTMLDivElement>(null);
   const overdue =
     task.status !== "done" && !!task.date && isDateOverdue(task.date);
-  const hasSummary = Boolean(task.summary?.trim());
   const nextStatus = getNextStatus(task.status);
 
   const currentStatus =
@@ -40,7 +39,6 @@ export function useTaskItem(task: Task) {
 
   return {
     overdue,
-    hasSummary,
     confirming,
     setConfirming,
     nextStatus,
