@@ -7,9 +7,7 @@ export function Toast({ message, variant = "success", icon }: ToastProps) {
   }
 
   const isError = variant === "error";
-
   const DefaultIcon = isError ? CircleX : CheckCircle2;
-
   const Icon = icon ?? DefaultIcon;
 
   return (

@@ -102,6 +102,7 @@ export function WellnessProvider({ children }: { children: React.ReactNode }) {
     if (!user) {
       return;
     }
+    if (activePlan) return;
 
     const { data: plan, error } = await supabase
       .from("wellness_plans")

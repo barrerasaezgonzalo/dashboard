@@ -10,11 +10,13 @@ import { ConfirmModal } from "../Ui/ConfirmModal";
 export function EmptyPlanBlock({
   title,
   description,
+  onPlanClosed,
 }: {
   title: string;
   description: string;
+  onPlanClosed?: () => void;
 }) {
-  const { activePlan, updatePlanStatus, resetCheckIn } = useWellness();
+  const { activePlan, updatePlanStatus } = useWellness();
   const tasks = activePlan?.tasks || [];
   const completedTasks = tasks.filter(
     (task) => task.status === "completed",
@@ -73,7 +75,7 @@ export function EmptyPlanBlock({
               disabled={isSubmitting}
               type="button"
               onClick={() => setConfirmAction("reject")}
-              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-700 bg-neutral-900/60 px-4 h-12 text-sm font-medium text-neutral-400 transition hover:border-red-500/60 hover:text-red-400 sm:w-auto"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-700 bg-neutral-900/60 px-4 h-12 text-sm font-medium text-neutral-400 transition hover:border-red-500/60 hover:text-red-400 sm:w-auto disabled:opacity-40"
             >
               <Ban size={20} />
               Rechazar Plan
@@ -114,7 +116,8 @@ export function EmptyPlanBlock({
             activePlan.id,
             confirmAction === "complete" ? "completed" : "rejected",
           );
-          resetCheckIn();
+
+          onPlanClosed?.();
           setIsSubmitting(false);
           setConfirmAction(null);
         }}

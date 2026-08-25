@@ -61,10 +61,15 @@ export function CheckInBlock({
           <button
             type="button"
             disabled={
-              !canGeneratePlan || loadingQuestion || Boolean(activePlan)
+              !canGeneratePlan ||
+              loadingQuestion ||
+              Boolean(activePlan) ||
+              isSubmitting
             }
             onClick={async () => {
+              setIsSubmitting(true);
               await onGeneratePlan();
+              setIsSubmitting(false);
             }}
             className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-neutral-700 bg-neutral-900/60 px-3 py-3 text-sm font-medium transition text-wellness/80 hover:border-wellness/80 disabled:cursor-not-allowed disabled:border-neutral-700 disabled:opacity-50"
           >

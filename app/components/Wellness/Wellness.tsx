@@ -17,6 +17,7 @@ export function Wellness() {
     handleContinue,
     handlePreparePlan,
     checkInCompleted,
+    resetCheckIn,
   } = useWellness();
 
   return (
@@ -45,6 +46,7 @@ export function Wellness() {
       ) : (
         <>
           <EmptyPlanBlock
+            onPlanClosed={resetCheckIn}
             title="Resumen del plan"
             description="Avanza paso a paso en tu plan y completa las tareas pendientes. Cada acción suma y te permite ver con más claridad el progreso que estás logrando."
           />

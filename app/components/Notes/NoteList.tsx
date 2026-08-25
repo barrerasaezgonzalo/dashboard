@@ -3,15 +3,16 @@
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 
 import type { NoteListProps } from "@/app/types";
+import { useHorizontalScroll } from "@/app/hooks/useHorizontalScroll";
 
 export function NoteList({
   notes,
   currentNote,
   isNewNote,
-  scrollContainerRef,
-  scroll,
   handleSelectNote,
 }: NoteListProps) {
+  const { scrollContainerRef, scroll } = useHorizontalScroll();
+
   return (
     <div className="border-t border-neutral-700 p-4">
       <div className="mb-3 flex items-center justify-between">

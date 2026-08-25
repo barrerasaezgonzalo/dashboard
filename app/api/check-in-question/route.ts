@@ -1,3 +1,5 @@
+import { CheckInMessage } from "@/app/types";
+
 export async function POST(request: Request) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
@@ -6,13 +8,14 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-  const { question, answer } = await request.json();
-  if (!answer?.trim()) {
-    return Response.json(
-      { error: "La respuesta es obligatoria" },
-      { status: 400 },
-    );
-  }
+  // const { question, answer } = await request.json();
+  const { messages } = await request.json();
+  // if (!answer?.trim()) {
+  //   return Response.json(
+  //     { error: "La respuesta es obligatoria" },
+  //     { status: 400 },
+  //   );
+  // }
 
   const response = await fetch(
     "https://api.groq.com/openai/v1/chat/completions",
@@ -51,11 +54,19 @@ No incluyas explicaciones, listas ni texto adicional.
           },
           {
             role: "user",
-            content: `
-Pregunta anterior:
-${question}
-Respuesta del usuario:
-${answer}
+            content: `Historial del check-in:
+
+${messages
+  .map(
+    (message: CheckInMessage, index: number) => `
+${index + 1}. Pregunta: ${message.question}
+Respuesta: ${message.answer}
+`,
+  )
+  .join("\n")}
+
+Genera la siguiente pregunta basándote en TODO el historial.
+No repitas preguntas ni temas ya tratados.
 `.trim(),
           },
         ],

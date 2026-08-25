@@ -43,6 +43,7 @@ export function useWellness() {
 
     setMessages(updatedMessages);
     setAnswer("");
+
     if (updatedMessages.length >= MAX_ANSWER) {
       setQuestion("");
       return;
@@ -53,8 +54,9 @@ export function useWellness() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        question: question,
-        answer: currentMessage.answer,
+        // question: question,
+        // answer: currentMessage.answer,
+        messages: updatedMessages,
       }),
     });
 
@@ -120,10 +122,6 @@ export function useWellness() {
       checkInQuestions[Math.floor(Math.random() * checkInQuestions.length)];
     setQuestion(randomQuestion);
   }, []);
-
-  useEffect(() => {
-    resetCheckIn;
-  }, [resetCheckIn]);
 
   return {
     activePlan,

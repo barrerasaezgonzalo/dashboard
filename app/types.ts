@@ -322,3 +322,24 @@ export type CalendarModalProps = {
   setTime: (value: string) => void;
   isEditing: boolean;
 };
+
+// Files
+export type FileItem = {
+  id: string | null;
+  name: string;
+  url: string;
+  type: string | undefined;
+};
+
+export type FilesItemProps = {
+  file: FileItem;
+  setFileToDelete: (f: string) => void;
+};
+
+export type FileUploadProps = {
+  selectedFile: File | null;
+  isUploading: boolean;
+  setSelectedFile: (f: File | null) => void;
+  uploadFile: () => void;
+  handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+};
