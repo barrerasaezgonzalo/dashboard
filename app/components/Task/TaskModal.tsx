@@ -36,7 +36,7 @@ export function TaskModal(props: TaskModalProps) {
     >
       <div
         onClick={(event) => event.stopPropagation()}
-        className="w-full max-w-xl overflow-hidden rounded-xl border border-neutral-700 bg-[#292929] shadow-2xl"
+        className="w-full max-w-md overflow-hidden rounded-xl border border-neutral-700 bg-[#292929] shadow-2xl"
       >
         <header className="flex items-center justify-between border-b border-neutral-700 px-5 py-4">
           <h2 className="text-lg font-semibold text-white">

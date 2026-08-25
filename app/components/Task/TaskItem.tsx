@@ -57,9 +57,9 @@ export function TaskItem({
 
         <div className="flex shrink-0 items-center gap-2">
           {task.date && (
-            <div className="flex h-6 pt-1 rounded-md border border-white/20 px-2">
+            <div className="hidden sm:flex h-6 pt-1 rounded-md border border-white/20 px-2">
               <div
-                className={`hidden shrink-0 items-center gap-1.5 text-sm sm:flex 
+                className={` shrink-0 items-center gap-1.5 text-sm sm:flex 
                 ${overdue ? "text-red-400" : "text-neutral-400"}`}
               >
                 <CalendarDays size={16} className="mb-0.5" />

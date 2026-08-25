@@ -25,7 +25,7 @@ export function Header() {
     <header className="sticky top-0 z-50 flex h-[60px] items-center border-b border-neutral-700 bg-neutral-800 px-5">
       <Search />
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="hidden ml-auto md:flex items-center gap-2">
         {dashboardLinks.map((item) => {
           const Icon = item.icon;
 
