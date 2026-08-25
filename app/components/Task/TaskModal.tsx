@@ -60,6 +60,7 @@ export function TaskModal(props: TaskModalProps) {
             </span>
 
             <input
+              autoFocus
               type="text"
               value={title}
               onChange={(event) => handleTitleChange(event.target.value)}

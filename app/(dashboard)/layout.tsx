@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Header } from "@/app/components/Ui/Header";
 import { useAuth } from "@/app/hooks/useAuth";
 import { ScrollToTop } from "../components/Ui/scrollToTop";
+import { DashboardSkeleton } from "../components/Ui/DashboardSkeleton";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -21,10 +22,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [loading, isAuthenticated, router]);
 
   if (loading) {
-    return null;
-  }
-  if (!isAuthenticated) {
-    return null;
+    return <DashboardSkeleton />;
   }
 
   return (

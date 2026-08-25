@@ -47,6 +47,7 @@ export function CalendarModal({
 
               <input
                 type="text"
+                autoFocus
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ej: Reunión de proyecto"

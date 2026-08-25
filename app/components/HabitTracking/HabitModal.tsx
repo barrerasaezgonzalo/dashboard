@@ -60,6 +60,7 @@ export function HabitModal({
             </span>
 
             <input
+              autoFocus
               type="text"
               value={name}
               onChange={(event) => setName(event.target.value)}

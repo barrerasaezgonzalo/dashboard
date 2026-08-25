@@ -174,7 +174,7 @@ export function Calendar() {
                 );
               })
             ) : (
-              <div className="py-6 text-center text-sm text-neutral-500">
+              <div className="py-6 text-center text-base text-neutral-500">
                 No hay eventos este mes.
               </div>
             )}

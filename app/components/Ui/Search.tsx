@@ -29,7 +29,7 @@ export function Search() {
   const hasResults = filteredTasks.length > 0 || filteredNotes.length > 0;
 
   return (
-    <div className="relative w-full max-w-70" ref={searchRef}>
+    <div className="relative w-full max-w-100" ref={searchRef}>
       <SearchLogo
         size={16}
         className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"

@@ -75,6 +75,13 @@ export function HabitTracking() {
             />
           ))}
         </div>
+        {habits.length === 0 && (
+          <div className="flex min-h-20 items-center justify-center rounded-lg border border-dashed border-neutral-700">
+            <p className="text-base text-neutral-500">
+              No tienes Habitos creados.
+            </p>
+          </div>
+        )}
       </div>
 
       <HabitModal

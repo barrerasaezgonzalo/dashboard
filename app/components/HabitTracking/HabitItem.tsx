@@ -50,6 +50,7 @@ export function HabitItem({
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
+          11
           <button
             type="button"
             title="Editar hábito"
@@ -58,7 +59,6 @@ export function HabitItem({
           >
             <SquarePen size={14} />
           </button>
-
           <button
             type="button"
             title="Eliminar hábito"

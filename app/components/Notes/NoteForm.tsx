@@ -1,6 +1,6 @@
 "use client";
 
-import { Save, Star, Trash } from "lucide-react";
+import { SquarePlus, Save, Star, Trash } from "lucide-react";
 
 import type { NoteFormProps } from "@/app/types";
 
