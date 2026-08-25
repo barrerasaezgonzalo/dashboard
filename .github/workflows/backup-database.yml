@@ -19,7 +19,10 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
         run: |
-          pg_dump "$DATABASE_URL" > backup.sql
+          docker run --rm \
+            -e DATABASE_URL="$DATABASE_URL" \
+            postgres:17 \
+            sh -c 'pg_dump "$DATABASE_URL"' > backup.sql
 
       - name: Guardar backup
         uses: actions/upload-artifact@v4
