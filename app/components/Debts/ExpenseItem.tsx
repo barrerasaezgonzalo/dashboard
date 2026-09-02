@@ -8,87 +8,92 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { formatNumber } from "@/app/utils";
-import { ExpenseItemProps } from "@/app/types";
+import type { ExpenseItemProps } from "@/app/types/expenses";
+import { useExpenseItem } from "@/app/hooks/useExpenseItem";
 
-export function ExpenseItem({
-  expense,
-  amount,
-  onAmountChange,
-  onPaid,
-}: ExpenseItemProps) {
-  const isPaid = expense.status === "paid";
-  const numericAmount = Number(amount) || 0;
-  const isValidAmount = numericAmount >= 1;
-  const paidAmount = expense.paid_amount;
-  const lastPaidAmount = expense.last_paid_amount;
-  const paidLess = isPaid && paidAmount < lastPaidAmount;
-  const paidMore = isPaid && paidAmount > lastPaidAmount;
-  const paidSame = isPaid && paidAmount === lastPaidAmount;
+export function ExpenseItem({ expense, onAmountChange }: ExpenseItemProps) {
+  const {
+    formattedAmount,
+    formattedLastMonth,
+    hasChanges,
+    isPaid,
+    spentLess,
+    spentMore,
+    spentSame,
+    handleAmountChange,
+    handleSave,
+  } = useExpenseItem({
+    expense,
+    onAmountChange,
+  });
 
   return (
     <article
-      className={`group flex min-w-0 items-center gap-3 rounded-lg border p-3 transition ${
+      className={`rounded-lg border p-3 transition ${
         isPaid
           ? "border-blue-500/50 bg-neutral-800/20"
           : "border-orange-400/50 bg-neutral-900/20"
       }`}
     >
-      <div
-        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
-          !isPaid
-            ? "bg-neutral-700/40 text-neutral-500"
-            : paidLess
+      <div className="flex items-center gap-2">
+        <div
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+            spentLess
               ? "bg-green-700/10 text-green-400"
-              : paidMore
+              : spentMore
                 ? "bg-red-700/10 text-red-400"
                 : "bg-neutral-700/40 text-neutral-400"
-        }`}
-      >
-        {!isPaid && <CircleDollarSign size={15} />}
-        {paidLess && <TrendingDown size={15} />}
-        {paidMore && <TrendingUp size={15} />}
-        {paidSame && <MoveRight size={15} />}
-      </div>
+          }`}
+        >
+          {spentLess ? (
+            <TrendingDown size={18} />
+          ) : spentMore ? (
+            <TrendingUp size={18} />
+          ) : spentSame ? (
+            <MoveRight size={18} />
+          ) : (
+            <CircleDollarSign
+              size={18}
+              className={isPaid ? "text-blue-500/50" : ""}
+            />
+          )}
+        </div>
 
-      <div className="min-w-0 flex items-center justify-between gap-4 flex-1">
         <p
-          className={`truncate text-base font-medium ${
+          className={`min-w-0 flex-1 text-lg font-medium ${
             isPaid ? "text-neutral-200" : "text-neutral-400"
           }`}
         >
           {expense.title}
         </p>
-
-        <p className="text-sm text-neutral-500">
-          Mes anterior: ${formatNumber(expense.last_paid_amount)}
-        </p>
-
-        <input
-          type="text"
-          inputMode="numeric"
-          value={amount}
-          onChange={(event) => onAmountChange(expense.id, event.target.value)}
-          placeholder="Monto pagado"
-          className="h-7 w-fit rounded-md border border-neutral-700 bg-neutral-800 px-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-400 focus:border-debts/60"
-        />
       </div>
 
-      <button
-        type="button"
-        disabled={!isValidAmount}
-        onClick={() => onPaid(expense.id, expense.status)}
-        title={isPaid ? "Actualizar monto" : "Marcar como pagado"}
-        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition ${
-          !isValidAmount
-            ? "cursor-not-allowed border-neutral-700 text-neutral-700"
-            : isPaid
-              ? "cursor-pointer border-blue-500/50 bg-blue-500/10 text-blue-500"
-              : "cursor-pointer border-neutral-700 text-neutral-500 hover:border-blue-500/60 hover:bg-blue-500/10 hover:text-blue-500"
-        }`}
-      >
-        <Check size={14} strokeWidth={3} />
-      </button>
+      <div className="mt-3 flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <input
+            type="text"
+            inputMode="numeric"
+            value={formattedAmount}
+            onChange={(event) => handleAmountChange(event.target.value)}
+            placeholder="Monto"
+            className="h-9 w-full rounded-md border border-neutral-700 bg-neutral-800 px-2 text-base text-neutral-400 outline-none placeholder:text-neutral-500 focus:border-indigo-500/60"
+          />
+
+          <p className="mt-1 pl-1 text-xs text-neutral-500">
+            Anterior {formattedLastMonth}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          disabled={!hasChanges}
+          onClick={handleSave}
+          title="Guardar monto"
+          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-indigo-500/50 bg-indigo-500/10 text-indigo-400 transition hover:bg-indigo-500/20 disabled:cursor-not-allowed disabled:border-neutral-700 disabled:bg-transparent disabled:text-neutral-700"
+        >
+          <Check size={16} strokeWidth={3} />
+        </button>
+      </div>
     </article>
   );
 }

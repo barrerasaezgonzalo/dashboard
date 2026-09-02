@@ -2,7 +2,8 @@
 
 import { useContext, useEffect, useState } from "react";
 import { HabitContext } from "@/app/providers/HabitProvider";
-import { Habit } from "../types";
+import { Habit, HabitDayStatus } from "../types";
+import { showResponseMessage } from "../utils";
 
 export function useHabit() {
   const context = useContext(HabitContext);
@@ -35,14 +36,16 @@ export function useHabit() {
     false,
   ]);
   const [saving, setSaving] = useState(false);
+
   const today = new Date();
   const currentDay = today.getDay() === 0 ? 6 : today.getDay() - 1;
+
   const invalidHabit = name.trim().length < 3 || !days.some(Boolean);
 
   const availableUntilToday = habits.flatMap((habit) =>
     habit.days.map((enabled, index) => ({
       enabled,
-      completed: habit.completed[index],
+      status: habit.completed[index],
       index,
     })),
   );
@@ -52,7 +55,8 @@ export function useHabit() {
   ).length;
 
   const totalCompleted = availableUntilToday.filter(
-    (day) => day.enabled && day.completed && day.index <= currentDay,
+    (day) =>
+      day.enabled && day.status === "completed" && day.index <= currentDay,
   ).length;
 
   const progress =
@@ -61,8 +65,22 @@ export function useHabit() {
       : 0;
 
   const handleToggleCompleted = async (habit: Habit, index: number) => {
-    const completed = habit.completed.map((value, dayIndex) =>
-      dayIndex === index ? !value : value,
+    const completed: HabitDayStatus[] = habit.completed.map(
+      (status, dayIndex) => {
+        if (dayIndex !== index) {
+          return status;
+        }
+
+        if (status === "pending") {
+          return "completed";
+        }
+
+        if (status === "completed") {
+          return "failed";
+        }
+
+        return "pending";
+      },
     );
 
     await updateHabitCompleted(habit.id, completed);
@@ -98,25 +116,29 @@ export function useHabit() {
     if (invalidHabit || saving) {
       return;
     }
+
     setSaving(true);
+
     if (selectedHabit) {
       await updateHabit(selectedHabit.id, {
         name: name.trim(),
         days,
       });
-      setResponseOperationMessage("Hábito actualizado correctamente.");
-      setTimeout(() => {
-        setResponseOperationMessage("");
-      }, 4000);
+
+      showResponseMessage(
+        setResponseOperationMessage,
+        "Hábito actualizado correctamente.",
+      );
     } else {
       await createHabit({
         name: name.trim(),
         days,
       });
-      setResponseOperationMessage("Hábito creado correctamente.");
-      setTimeout(() => {
-        setResponseOperationMessage("");
-      }, 4000);
+
+      showResponseMessage(
+        setResponseOperationMessage,
+        "Hábito creado correctamente.",
+      );
     }
 
     setSaving(false);
@@ -131,10 +153,10 @@ export function useHabit() {
 
     await deleteHabit(selectedHabit.id);
 
-    setResponseOperationMessage("Hábito eliminado correctamente.");
-    setTimeout(() => {
-      setResponseOperationMessage("");
-    }, 4000);
+    showResponseMessage(
+      setResponseOperationMessage,
+      "Hábito eliminado correctamente.",
+    );
 
     setSelectedHabit(null);
     setIsDeleteModalOpen(false);
@@ -150,6 +172,7 @@ export function useHabit() {
       setDays(selectedHabit.days);
       return;
     }
+
     setName("");
     setDays([false, false, false, false, false, false, false]);
   }, [selectedHabit, isModalOpen]);

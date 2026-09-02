@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 type DashboardSectionProps = {
   id: string;
   children: React.ReactNode;
@@ -11,10 +13,18 @@ export function DashboardSection({
   children,
   button,
 }: DashboardSectionProps) {
+  useEffect(() => {
+    const id = window.location.hash.replace("#", "");
+    if (!id) return;
+    document.getElementById(id)?.scrollIntoView({
+      block: "start",
+    });
+  }, []);
+
   return (
     <section
       id={id}
-      className="w-full min-w-0 rounded-xl border border-neutral-700 bg-neutral-800 scroll-mt-24 "
+      className="w-full min-w-0 rounded-xl border border-neutral-700 bg-neutral-800 scroll-mt-32 "
     >
       <div className="flex items-start justify-between gap-3 border-b border-neutral-700 px-5 py-4">
         {header} {button}

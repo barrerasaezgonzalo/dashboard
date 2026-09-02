@@ -1,9 +1,9 @@
 "use client";
 
 import { useContext, useState } from "react";
-import { Task, TaskFormData, taskGroupConfigProps, TaskStatus } from "../types";
+import { Task, TaskFormData, TaskGroupConfig, TaskStatus } from "../types";
 import { TaskContext } from "../providers/TaskProvider";
-import { isDateOverdue } from "../utils";
+import { isDateOverdue, showResponseMessage } from "../utils";
 import { Circle, CircleGauge, Check } from "lucide-react";
 
 export function useTask() {
@@ -52,10 +52,10 @@ export function useTask() {
       important: data.important,
       status: "todo",
     });
-    setResponseOperationMessage("Tarea creada correctamente.");
-    setTimeout(() => {
-      setResponseOperationMessage("");
-    }, 4000);
+    showResponseMessage(
+      setResponseOperationMessage,
+      "Tarea creada correctamente.",
+    );
   };
 
   const handleUpdateTask = async (data: TaskFormData) => {
@@ -68,20 +68,19 @@ export function useTask() {
       important: data.important,
     });
 
-    setResponseOperationMessage("Tarea actualizada correctamente.");
-    setTimeout(() => {
-      setResponseOperationMessage("");
-    }, 4000);
+    showResponseMessage(
+      setResponseOperationMessage,
+      "Tarea actualizada correctamente.",
+    );
   };
 
   const handleDeleteTask = async () => {
     if (!selectedTask) return;
     await deleteTask(selectedTask.id);
-    setResponseOperationMessage("Tarea eliminada correctamente.");
-
-    setTimeout(() => {
-      setResponseOperationMessage("");
-    }, 4000);
+    showResponseMessage(
+      setResponseOperationMessage,
+      "Tarea eliminada correctamente.",
+    );
     setIsDeleteModalOpen(false);
     setSelectedTask(null);
   };
@@ -111,7 +110,7 @@ export function useTask() {
     return "todo";
   }
 
-  const taskGroupConfig: taskGroupConfigProps[] = [
+  const taskGroupConfig: TaskGroupConfig[] = [
     {
       status: "todo",
       title: "Pendientes",
@@ -130,7 +129,7 @@ export function useTask() {
       icon: CircleGauge,
       bg: "bg-cyan-400",
       border: "border-cyan-400",
-      className: "bg-cyan-400 text-neutral-800",
+      className: "bg-cyan-400 text-neutral-900",
     },
     {
       status: "done",

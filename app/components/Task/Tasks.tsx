@@ -1,15 +1,14 @@
 "use client";
 
 import { ListTodo, SquarePlus } from "lucide-react";
-
 import { useTask } from "@/app/hooks/useTask";
-
 import { TaskGroup } from "./TaskGroup";
 import { TaskModal } from "./TaskModal";
 import { ConfirmModal } from "../Ui/ConfirmModal";
 import { SectionHeader } from "../Ui/SectionHeader";
 import { DashboardSection } from "../Ui/DashboardSection";
 import { Toast } from "../Ui/Toast";
+import { SectionActionButton } from "../Ui/SectionActionButton";
 
 export function Tasks() {
   const {
@@ -33,34 +32,27 @@ export function Tasks() {
     <DashboardSection
       id="tasks"
       button={
-        <button
-          type="button"
+        <SectionActionButton
           onClick={handleOpenCreate}
-          className="ml-auto flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-neutral-700 bg-neutral-900/60 text-tasks/50 transition hover:border-tasks/80 hover:text-tasks/80"
-        >
-          <SquarePlus size={25} />
-        </button>
+          icon={SquarePlus}
+          color="blue"
+        />
       }
       header={
         <SectionHeader
           title="Tareas"
           description="Gestiona el estado de tus tareas."
           icon={ListTodo}
-          color="tasks"
+          color="blue"
         />
       }
     >
-      <div className="space-y-5 px-3 py-4">
-        {taskGroupConfig.map((group) => (
-          <TaskGroup
-            {...group}
-            key={group.status}
-            onNextStatus={handleNextStatus}
-            onEdit={handleOpenEdit}
-            onDelete={handleOpenDelete}
-          />
-        ))}
-      </div>
+      <TaskGroup
+        taskGroupConfig={taskGroupConfig}
+        onNextStatus={handleNextStatus}
+        onEdit={handleOpenEdit}
+        onDelete={handleOpenDelete}
+      />
 
       <TaskModal
         isOpen={isModalOpen}

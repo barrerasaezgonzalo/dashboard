@@ -2,8 +2,8 @@
 
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 
-import type { NoteListProps } from "@/app/types";
 import { useHorizontalScroll } from "@/app/hooks/useHorizontalScroll";
+import { NoteListProps } from "@/app/types/notes";
 
 export function NoteList({
   notes,
@@ -16,7 +16,7 @@ export function NoteList({
   return (
     <div className="border-t border-neutral-700 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+        <h3 className="text-base font-semibold uppercase tracking-wider text-neutral-400">
           Más notas
         </h3>
 
@@ -47,14 +47,14 @@ export function NoteList({
           <div
             key={note.id}
             onClick={() => handleSelectNote(note)}
-            className={`relative min-w-[180px] max-w-[180px] cursor-pointer rounded-lg border bg-neutral-900/60 p-3 transition hover:border-amber-500/60 ${
+            className={`relative min-w-[120px] max-w-[180px] cursor-pointer rounded-lg border bg-neutral-900/60 p-3 transition hover:border-amber-500/60 ${
               currentNote?.id === note.id && !isNewNote
                 ? "border-amber-500/60"
                 : "border-neutral-700"
             }`}
           >
             <div className="flex items-center gap-2">
-              <p className="min-w-0 flex-1 truncate text-xs font-medium text-white">
+              <p className="min-w-0 flex-1 truncate text-base text-center font-medium text-neutral-500">
                 {note.title}
               </p>
 
@@ -65,10 +65,6 @@ export function NoteList({
                 />
               )}
             </div>
-
-            <p className="mt-1 line-clamp-2 text-xs text-neutral-500">
-              {note.content || "Sin contenido"}
-            </p>
           </div>
         ))}
       </div>

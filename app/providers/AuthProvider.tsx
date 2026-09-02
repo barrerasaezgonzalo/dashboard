@@ -4,6 +4,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/app/lib/supabase";
+import { errorLogger } from "@/app/lib/errorLogger";
 
 type AuthContextType = {
   user: User | null;
@@ -58,8 +59,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
 
     if (error) {
-      console.error("Error login Google:", error);
-
+      errorLogger.logError("Error al iniciar sesión con Google", error, {
+        context: "AuthProvider",
+        userMessage: "No se pudo iniciar sesión. Por favor, intenta de nuevo.",
+      });
       throw error;
     }
   };
@@ -68,8 +71,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      console.error("Error logout:", error);
-
+      errorLogger.logError("Error al cerrar sesión", error, {
+        context: "AuthProvider",
+        userMessage: "No se pudo cerrar sesión. Por favor, intenta de nuevo.",
+      });
       throw error;
     }
 

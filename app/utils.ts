@@ -29,6 +29,8 @@ export function parseDateYMD(value: string): Date | null {
 }
 
 export const handleScrollTo = (id: string) => {
+  window.location.hash = id;
+
   document.getElementById(id)?.scrollIntoView({
     behavior: "smooth",
     block: "start",
@@ -70,4 +72,16 @@ export function isToday(date: Date) {
     date.getMonth() === today.getMonth() &&
     date.getDate() === today.getDate()
   );
+}
+
+export function showResponseMessage(
+  setMessage: (message: string) => void,
+  message: string,
+  duration = 4000,
+) {
+  setMessage(message);
+
+  setTimeout(() => {
+    setMessage("");
+  }, duration);
 }

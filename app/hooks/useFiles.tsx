@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { errorLogger } from "../lib/errorLogger";
 import { useAuth } from "./useAuth";
 import { FileItem } from "../types";
 
@@ -41,7 +42,11 @@ export function useFiles() {
       }, 4000);
       await loadFiles();
     } catch (error) {
-      console.error(error);
+      errorLogger.logError("Error al subir el archivo", error, {
+        context: "useFiles",
+        userMessage:
+          "No se pudo subir el archivo. Por favor, intenta de nuevo.",
+      });
       setResponseOperationMessage("No se pudo subir el archivo");
       setTimeout(() => {
         setResponseOperationMessage("");
@@ -59,7 +64,11 @@ export function useFiles() {
       .list(user.id);
 
     if (error) {
-      console.error(error);
+      errorLogger.logError("Error al cargar los archivos", error, {
+        context: "useFiles",
+        userMessage:
+          "No se pudieron cargar los archivos. Por favor, recarga la página.",
+      });
       return;
     }
 
@@ -84,7 +93,11 @@ export function useFiles() {
     const path = `${user.id}/${fileToDelete}`;
     const { error } = await supabase.storage.from("barrerasaez").remove([path]);
     if (error) {
-      console.error("Error deleting file:", error);
+      errorLogger.logError("Error al eliminar el archivo", error, {
+        context: "useFiles",
+        userMessage:
+          "No se pudo eliminar el archivo. Por favor, intenta de nuevo.",
+      });
       return;
     }
     setResponseOperationMessage("Archivo eliminado correctamente");

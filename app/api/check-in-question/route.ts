@@ -1,21 +1,30 @@
 import { CheckInMessage } from "@/app/types";
+import {
+  validateCheckInMessages,
+  parseRequestJSON,
+  errorResponse,
+  successResponse,
+} from "@/app/api/utils/validation";
 
 export async function POST(request: Request) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return Response.json(
-      { error: "GROQ_API_KEY no está configurada" },
-      { status: 500 },
-    );
+    return errorResponse("GROQ_API_KEY no está configurada", 500);
   }
-  // const { question, answer } = await request.json();
-  const { messages } = await request.json();
-  // if (!answer?.trim()) {
-  //   return Response.json(
-  //     { error: "La respuesta es obligatoria" },
-  //     { status: 400 },
-  //   );
-  // }
+
+  // Parsear y validar JSON
+  const parseResult = await parseRequestJSON(request);
+  if (!parseResult.valid) {
+    return errorResponse(parseResult.error!);
+  }
+
+  const { messages } = parseResult.data as { messages: unknown };
+
+  // Validar que los mensajes sean válidos
+  const messagesValidation = validateCheckInMessages(messages);
+  if (!messagesValidation.valid) {
+    return errorResponse(messagesValidation.error!);
+  }
 
   const response = await fetch(
     "https://api.groq.com/openai/v1/chat/completions",
@@ -56,7 +65,7 @@ No incluyas explicaciones, listas ni texto adicional.
             role: "user",
             content: `Historial del check-in:
 
-${messages
+${(messages as CheckInMessage[])
   .map(
     (message: CheckInMessage, index: number) => `
 ${index + 1}. Pregunta: ${message.question}
@@ -73,25 +82,21 @@ No repitas preguntas ni temas ya tratados.
       }),
     },
   );
+
   const data = await response.json();
+
   if (!response.ok) {
-    return Response.json(
-      {
-        error:
-          data.error?.message ?? "No se pudo generar la siguiente pregunta",
-      },
-      { status: response.status },
+    return errorResponse(
+      data.error?.message ?? "No se pudo generar la siguiente pregunta",
+      response.status,
     );
   }
 
   const nextQuestion = data.choices?.[0]?.message?.content?.trim();
 
   if (!nextQuestion) {
-    return Response.json(
-      { error: "Groq devolvió una pregunta vacía" },
-      { status: 502 },
-    );
+    return errorResponse("Groq devolvió una pregunta vacía", 502);
   }
 
-  return Response.json({ question: nextQuestion });
+  return successResponse({ question: nextQuestion });
 }

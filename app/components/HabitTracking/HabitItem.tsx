@@ -10,7 +10,7 @@ import {
 
 import { HabitDay } from "./HabitDay";
 import { weekDays } from "@/app/constants";
-import { HabitItemProps } from "@/app/types";
+import { HabitItemProps } from "@/app/types/habits";
 
 export function HabitItem({
   habit,
@@ -19,52 +19,54 @@ export function HabitItem({
   onEdit,
   onDelete,
 }: HabitItemProps) {
-  const completedThisWeek = habit.completed.filter(Boolean).length;
+  const completedThisWeek = habit.completed.filter(
+    (status) => status === "completed",
+  ).length;
+
   const isBetter = completedThisWeek > habit.last_completed;
   const isWorse = completedThisWeek < habit.last_completed;
-
   return (
-    <article className="rounded-lg border border-neutral-700 bg-neutral-900/20 px-3 py-3 transition hover:bg-neutral-700/20">
-      <div className="flex min-w-0 items-center gap-3">
-        <span className="min-w-0 flex-1 truncate text-sm font-medium text-neutral-300">
+    <article className="relative rounded-lg border border-neutral-700 bg-neutral-900/20 px-3 py-3 transition hover:bg-neutral-700/20">
+      <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
+        <span className="truncate text-base font-medium text-neutral-300">
           {habit.name}
         </span>
 
-        <div
-          title={`${completedThisWeek} esta semana / ${habit.last_completed} semana anterior`}
-          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
-            isBetter
-              ? "bg-green-500/10 text-green-400"
-              : isWorse
-                ? "bg-red-500/10 text-red-400"
-                : "bg-neutral-700/40 text-neutral-400"
-          }`}
-        >
-          {isBetter ? (
-            <TrendingUp size={14} />
-          ) : isWorse ? (
-            <TrendingDown size={14} />
-          ) : (
-            <MoveRight size={14} />
-          )}
-        </div>
+        <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-1">
+          <div
+            className={`flex h-8 w-8 items-center justify-center ${
+              isBetter
+                ? "text-green-400"
+                : isWorse
+                  ? "text-red-400"
+                  : "text-neutral-400"
+            }`}
+          >
+            {isBetter ? (
+              <TrendingUp size={25} />
+            ) : isWorse ? (
+              <TrendingDown size={25} />
+            ) : (
+              <MoveRight size={25} />
+            )}
+          </div>
 
-        <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
             title="Editar hábito"
             onClick={() => onEdit(habit)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-neutral-700 text-neutral-500 transition hover:border-habits/60 hover:text-habits"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-neutral-400 transition hover:text-white"
           >
-            <SquarePen size={14} />
+            <SquarePen size={25} />
           </button>
+
           <button
             type="button"
             title="Eliminar hábito"
             onClick={() => onDelete(habit)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-neutral-700 text-neutral-500 transition hover:border-red-500/60 hover:text-red-400"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-neutral-400 transition hover:text-red-400"
           >
-            <Trash2 size={14} />
+            <Trash2 size={25} />
           </button>
         </div>
       </div>

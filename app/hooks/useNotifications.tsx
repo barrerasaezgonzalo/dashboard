@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarDays, ListClock, ListTodo, Wallet } from "lucide-react";
+
 import { useTask } from "./useTask";
 import { useExpense } from "./useExpense";
 import { useHabit } from "./useHabit";
@@ -9,32 +10,49 @@ import { parseDateYMD } from "../utils";
 
 export function useNotifications() {
   const { overdueTasks } = useTask();
-  const { allExpenses } = useExpense();
+  const { expenses } = useExpense();
   const { habits } = useHabit();
-  const today = new Date();
   const { events } = useCalendar();
-  const overdueEvents = events.filter((event) => {
-    const eventDate = parseDateYMD(event.date);
-    if (!eventDate) return false;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return eventDate < today;
-  });
+
+  const today = new Date();
+
   const currentDay = today.getDay() === 0 ? 6 : today.getDay() - 1;
-  const pendingExpenses = allExpenses.filter(
+
+  const todayEvents = events.filter((event) => {
+    const eventDate = parseDateYMD(event.date);
+
+    if (!eventDate) return false;
+
+    return (
+      eventDate.getFullYear() === today.getFullYear() &&
+      eventDate.getMonth() === today.getMonth() &&
+      eventDate.getDate() === today.getDate()
+    );
+  });
+
+  const pendingExpenses = expenses.filter(
     (expense) => expense.status === "pending",
   );
 
+  const overdueHabits = habits.filter((habit) =>
+    habit.days.some((enabled, index) => {
+      const isPreviousDay = index < currentDay;
+      const completed = habit.completed[index];
+
+      return enabled && isPreviousDay && !completed;
+    }),
+  );
+
   const calendarNotifications =
-    overdueEvents.length > 0
+    todayEvents.length > 0
       ? [
           {
-            id: "overdue-events",
+            id: "today-events",
             icon: CalendarDays,
             title:
-              overdueEvents.length === 1
-                ? "Tienes 1 evento retrasado"
-                : `Tienes ${overdueEvents.length} eventos retrasados`,
+              todayEvents.length === 1
+                ? "Tienes 1 evento para hoy"
+                : `Tienes ${todayEvents.length} eventos para hoy`,
           },
         ]
       : [];
@@ -43,20 +61,15 @@ export function useNotifications() {
     pendingExpenses.length > 0
       ? [
           {
-            id: "overdue-expenses",
+            id: "pending-expenses",
             icon: Wallet,
-            title: "Tienes pagos pendientes",
+            title:
+              pendingExpenses.length === 1
+                ? "Tienes 1 pago pendiente"
+                : `Tienes ${pendingExpenses.length} pagos pendientes`,
           },
         ]
       : [];
-
-  const overdueHabits = habits.filter((habit) =>
-    habit.days.some((enabled, index) => {
-      const isPreviousDay = index < currentDay;
-      const completed = habit.completed[index];
-      return enabled && isPreviousDay && !completed;
-    }),
-  );
 
   const habitNotifications =
     overdueHabits.length > 0
@@ -78,7 +91,10 @@ export function useNotifications() {
           {
             id: "overdue-tasks",
             icon: ListTodo,
-            title: `${overdueTasks.length} tareas atrasadas`,
+            title:
+              overdueTasks.length === 1
+                ? "1 tarea atrasada"
+                : `${overdueTasks.length} tareas atrasadas`,
           },
         ]
       : [];

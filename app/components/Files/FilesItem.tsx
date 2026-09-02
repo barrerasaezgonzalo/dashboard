@@ -1,5 +1,5 @@
 import { FilesItemProps } from "@/app/types";
-import { X, File } from "lucide-react";
+import { X } from "lucide-react";
 import Link from "next/link";
 
 export function FilesItem({ file, setFileToDelete }: FilesItemProps) {
@@ -14,7 +14,9 @@ export function FilesItem({ file, setFileToDelete }: FilesItemProps) {
               backgroundSize: "cover",
               backgroundPosition: "center",
             }
-          : undefined
+          : {
+              background: "linear-gradient(135deg, #cfcfcf, #8f8f8f)",
+            }
       }
     >
       <button
@@ -27,10 +29,6 @@ export function FilesItem({ file, setFileToDelete }: FilesItemProps) {
       </button>
 
       <Link href={file.url} target="_blank">
-        <div className="absolute inset-0 flex items-center justify-center pb-8">
-          <File size={40} />
-        </div>
-
         <div className="relative z-10 -m-3 mt-auto bg-neutral-800/60 p-3 backdrop-blur-sm">
           <p
             title={file.name}

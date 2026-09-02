@@ -6,6 +6,8 @@ import {
   SquareText,
   Wallet,
   Sparkles,
+  File,
+  GraduationCap,
 } from "lucide-react";
 
 export const checkInQuestions = [
@@ -36,54 +38,60 @@ export const dashboardLinks = [
     id: "tasks",
     label: "Tareas",
     icon: ListTodo,
-    className: "text-tasks",
-    classNameSoft: "text-tasks/50",
+    textColor: "text-blue-500",
   },
   {
     id: "habits",
     label: "Hábitos",
     icon: ListClock,
-    className: "text-habits",
-    classNameSoft: "text-habits/50",
+    textColor: "text-cyan-500",
   },
   {
     id: "calendar",
     label: "Calendario",
     icon: CalendarDays,
-    className: "text-calendar",
-    classNameSoft: "text-calendar/50",
+    textColor: "text-orange-500",
   },
   {
     id: "wellness",
     label: "Plan de Acción",
     icon: ListOrdered,
-    className: "text-wellness",
-    classNameSoft: "text-wellness/50",
+    textColor: "text-green-500",
   },
   {
     id: "notes",
     label: "Notas",
     icon: SquareText,
-    className: "text-notes",
-    classNameSoft: "text-notes/50",
-  },
-  {
-    id: "expenses",
-    label: "Gastos",
-    icon: Wallet,
-    className: "text-debts",
-    classNameSoft: "text-debts/50",
+    textColor: "text-amber-500",
   },
   {
     id: "prompt",
     label: "Prompt",
     icon: Sparkles,
-    className: "text-prompts",
-    classNameSoft: "text-prompts/50",
+    textColor: "text-yellow-500",
+  },
+  {
+    id: "expenses",
+    label: "Gastos",
+    icon: Wallet,
+    textColor: "text-indigo-500",
+  },
+
+  {
+    id: "files",
+    label: "Archivos",
+    icon: File,
+    textColor: "text-gray-500",
+  },
+  {
+    id: "learning",
+    label: "Learning",
+    icon: GraduationCap,
+    textColor: "text-violet-500",
   },
 ];
 
 export const weekDays = ["L", "M", "X", "J", "V", "S", "D"];
 
 export const MAX_ANSWER = 10;
-export const MIN_ANSWER = 2;
+export const MIN_ANSWER = 3;

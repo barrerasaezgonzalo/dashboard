@@ -3,22 +3,31 @@ import {
   GroqPlanResponse,
   WellnessPlanRequest,
 } from "@/app/types";
+import {
+  validateCheckInMessages,
+  parseRequestJSON,
+  errorResponse,
+  successResponse,
+} from "@/app/api/utils/validation";
 
 export async function POST(request: Request) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return Response.json(
-      { error: "GROQ_API_KEY no está configurada" },
-      { status: 500 },
-    );
+    return errorResponse("GROQ_API_KEY no está configurada", 500);
   }
 
-  const { messages } = (await request.json()) as WellnessPlanRequest;
-  if (!messages?.length) {
-    return Response.json(
-      { error: "Las respuestas del check-in son obligatorias" },
-      { status: 400 },
-    );
+  // Parsear y validar JSON
+  const parseResult = await parseRequestJSON(request);
+  if (!parseResult.valid) {
+    return errorResponse(parseResult.error!);
+  }
+
+  const { messages } = parseResult.data as WellnessPlanRequest;
+
+  // Validar que los mensajes sean válidos (mínimo 3 para generar un plan)
+  const messagesValidation = validateCheckInMessages(messages, 3, 10);
+  if (!messagesValidation.valid) {
+    return errorResponse(messagesValidation.error!);
   }
 
   const response = await fetch(
@@ -119,28 +128,22 @@ El título y el resumen deben reflejar el contexto general de todas las respuest
   const responseParsed = (await response.json()) as GroqPlanResponse;
 
   if (!response.ok) {
-    return Response.json(
-      { error: responseParsed.error?.message ?? "No se pudo generar el plan" },
-      { status: response.status },
+    return errorResponse(
+      responseParsed.error?.message ?? "No se pudo generar el plan",
+      response.status,
     );
   }
 
   const content = responseParsed.choices?.[0]?.message?.content?.trim();
 
   if (!content) {
-    return Response.json(
-      { error: "Groq devolvió una respuesta vacía" },
-      { status: 502 },
-    );
+    return errorResponse("Groq devolvió una respuesta vacía", 502);
   }
 
   try {
     const plan = JSON.parse(content) as GeneratedWellnessPlan;
-    return Response.json({ plan });
+    return successResponse({ plan });
   } catch {
-    return Response.json(
-      { error: "Groq devolvió un plan con formato inválido" },
-      { status: 502 },
-    );
+    return errorResponse("Groq devolvió un plan con formato inválido", 502);
   }
 }

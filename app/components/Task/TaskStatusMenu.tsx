@@ -1,5 +1,5 @@
+import { TaskStatusMenuProps } from "@/app/types/tasks";
 import { X } from "lucide-react";
-import type { TaskStatusMenuProps } from "../../types";
 
 export function TaskStatusMenu({
   taskId,

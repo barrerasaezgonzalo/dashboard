@@ -7,12 +7,12 @@ import { useHabit } from "@/app/hooks/useHabit";
 import { HabitModal } from "./HabitModal";
 import { ConfirmModal } from "../Ui/ConfirmModal";
 import { Toast } from "../Ui/Toast";
-import { HabitItem } from "./HabitItem";
+import { SectionActionButton } from "../Ui/SectionActionButton";
+import { HabitGroup } from "./HabitGroup";
 
 export function HabitTracking() {
   const {
     habits,
-    progress,
     currentDay,
     selectedHabit,
     isModalOpen,
@@ -38,51 +38,28 @@ export function HabitTracking() {
     <DashboardSection
       id="habits"
       button={
-        <button
-          type="button"
+        <SectionActionButton
           onClick={handleOpenCreate}
-          title="Nuevo hábito"
-          className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-neutral-700 bg-neutral-900/60 text-habits/50 transition hover:border-habits/80 hover:text-habits/80"
-        >
-          <SquarePlus size={25} />
-        </button>
+          icon={SquarePlus}
+          color="cyan"
+        />
       }
       header={
         <SectionHeader
           title="Hábitos"
           description="Seguimiento de esta semana."
           icon={ListClock}
-          color="habits"
+          color="cyan"
         />
       }
     >
-      <div className="mt-4 mx-4 flex items-center justify-between gap-2">
-        <div className="rounded-lg bg-cyan-500/10 px-3 py-1.5 text-sm font-medium text-cyan-400">
-          {progress}%
-        </div>
-      </div>
-
-      <div className="p-4">
-        <div className="space-y-2">
-          {habits.map((habit) => (
-            <HabitItem
-              key={habit.id}
-              habit={habit}
-              currentDay={currentDay}
-              onToggleCompleted={handleToggleCompleted}
-              onEdit={handleOpenEdit}
-              onDelete={handleOpenDelete}
-            />
-          ))}
-        </div>
-        {habits.length === 0 && (
-          <div className="flex min-h-20 items-center justify-center rounded-lg border border-dashed border-neutral-700">
-            <p className="text-base text-neutral-500">
-              No tienes Habitos creados.
-            </p>
-          </div>
-        )}
-      </div>
+      <HabitGroup
+        habits={habits}
+        currentDay={currentDay}
+        onToggleCompleted={handleToggleCompleted}
+        onEdit={handleOpenEdit}
+        onDelete={handleOpenDelete}
+      />
 
       <HabitModal
         isOpen={isModalOpen}

@@ -1,10 +1,10 @@
 "use client";
 
-import { CalendarDays, Save, X } from "lucide-react";
+import { CalendarDays, X } from "lucide-react";
 
-import type { TaskModalProps } from "@/app/types";
 import { useTaskModal } from "@/app/hooks/useTaskModal";
 import { isInvalidTitle } from "@/app/utils";
+import { TaskModalProps } from "@/app/types/tasks";
 
 export function TaskModal(props: TaskModalProps) {
   const {
@@ -36,17 +36,17 @@ export function TaskModal(props: TaskModalProps) {
     >
       <div
         onClick={(event) => event.stopPropagation()}
-        className="w-full max-w-md overflow-hidden rounded-xl border border-neutral-700 bg-[#292929] shadow-2xl"
+        className="w-full max-w-md overflow-hidden rounded-xl border border-neutral-700 bg-neutral-800 shadow-2xl"
       >
         <header className="flex items-center justify-between border-b border-neutral-700 px-5 py-4">
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-xl font-semibold text-white">
             {isEditing ? "Editar tarea" : "Agregar tarea"}
           </h2>
 
           <button
             type="button"
             onClick={handleClose}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-neutral-600 text-neutral-300 transition hover:bg-neutral-500 hover:text-white"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-neutral-400 transition bg-neutral-700 hover:text-white"
           >
             <X size={18} />
           </button>
@@ -54,7 +54,7 @@ export function TaskModal(props: TaskModalProps) {
 
         <form onSubmit={handleSubmit} className="space-y-5 px-5 py-5">
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-neutral-200">
+            <span className="mb-2 block text-lg font-medium text-neutral-200">
               Título
               <span className="ml-1 text-orange-400">*</span>
             </span>
@@ -65,16 +65,12 @@ export function TaskModal(props: TaskModalProps) {
               value={title}
               onChange={(event) => handleTitleChange(event.target.value)}
               placeholder="Ingrese un título"
-              className={`h-11 w-full rounded-lg border bg-transparent px-3 text-sm text-white outline-none transition placeholder:text-neutral-500 ${
-                invalidTitle
-                  ? "border-orange-700 focus:border-orange-700"
-                  : "border-neutral-600 focus:border-blue-500"
-              }`}
+              className={`h-11 w-full rounded-lg border bg-transparent px-3 text-base text-white outline-none transition placeholder:text-neutral-500 border-neutral-600`}
             />
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-neutral-200">
+            <span className="mb-2 block text-lg font-medium text-neutral-200">
               Resumen
             </span>
 
@@ -83,33 +79,33 @@ export function TaskModal(props: TaskModalProps) {
               onChange={(event) => setSummary(event.target.value)}
               placeholder="Escribe un breve resumen"
               rows={4}
-              className="w-full resize-none rounded-lg border border-neutral-600 bg-transparent px-3 py-3 text-sm text-white outline-none transition placeholder:text-neutral-500 focus:border-blue-500"
+              className="w-full resize-none rounded-lg border border-neutral-600 bg-transparent px-3 py-3 text-base text-white outline-none transition placeholder:text-neutral-500"
             />
           </label>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-2 block text-sm font-medium text-neutral-200">
+              <span className="mb-2 block text-lg font-medium text-neutral-200">
                 Fecha
               </span>
 
               <div className="relative">
                 <CalendarDays
-                  size={17}
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"
+                  size={16}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-200"
                 />
 
                 <input
                   type="date"
                   value={date}
                   onChange={(event) => setDate(event.target.value)}
-                  className="h-11 w-full rounded-lg border border-neutral-600 bg-transparent pl-10 pr-3 text-sm text-neutral-200 outline-none transition focus:border-blue-500 [color-scheme:dark]"
+                  className="h-11 w-full rounded-lg border border-neutral-600 bg-transparent mb-1 pl-10 pr-3 text-base text-neutral-200 outline-none transition [color-scheme:dark]"
                 />
               </div>
             </label>
 
             <section>
-              <span className="mb-2 block text-sm font-medium text-neutral-200">
+              <span className="mb-2 block text-lg font-medium text-neutral-200">
                 Importante
               </span>
 
@@ -118,8 +114,8 @@ export function TaskModal(props: TaskModalProps) {
                 onClick={() => setImportant((current) => !current)}
                 className="flex h-11 w-full cursor-pointer items-center justify-between rounded-lg border border-neutral-600 px-3 transition hover:border-neutral-500"
               >
-                <span className="text-sm text-neutral-300">
-                  {important ? "Marcado como importante" : "No importante"}
+                <span className="text-base text-neutral-300">
+                  {important ? "Importante" : "No importante"}
                 </span>
 
                 <span
@@ -141,7 +137,7 @@ export function TaskModal(props: TaskModalProps) {
             <button
               type="button"
               onClick={handleClose}
-              className="cursor-pointer rounded-lg border border-neutral-700 px-4 py-2 text-sm font-medium text-neutral-400 transition hover:bg-neutral-700"
+              className="cursor-pointer rounded-lg border border-neutral-700 px-4 py-2 text-base font-medium text-neutral-400 transition hover:bg-neutral-700"
             >
               Cancelar
             </button>
@@ -149,10 +145,10 @@ export function TaskModal(props: TaskModalProps) {
             <button
               type="submit"
               disabled={disabled}
-              className="flex items-center gap-2 cursor-pointer rounded-lg border border-tasks/50 bg-tasks/10  px-4 py-2 text-sm font-medium text-tasks transition hover:border-tasks disabled:cursor-not-allowed disabled:border-neutral-700 disabled:bg-neutral-700/20 disabled:text-neutral-600"
+              className={`cursor-pointer rounded-lg px-4 py-2 text-base font-medium text-white transition bg-blue-500 hover:bg-blue-600 
+                disabled:opacity-30 disabled:cursor-not-allowed
+            }`}
             >
-              <Save size={16} />
-
               {saving ? "Guardando..." : isEditing ? "Guardar" : "Crear"}
             </button>
           </footer>

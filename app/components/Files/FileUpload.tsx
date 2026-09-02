@@ -9,11 +9,11 @@ export function FileUpload({
   handleFileChange,
 }: FileUploadProps) {
   return (
-    <div className="m-4 rounded-lg border border-dashed border-files/50 bg-neutral-900/40 p-4">
+    <div className="m-4 rounded-lg border border-dashed border-blue-700/50 bg-neutral-900/40 p-4">
       {!selectedFile ? (
         <label
           htmlFor="file-upload"
-          className={`flex cursor-pointer items-center justify-center gap-2 text-sm text-neutral-400 transition hover:text-files
+          className={`flex cursor-pointer items-center justify-center gap-2 text-base text-neutral-400 transition hover:text-blue-700"1
               ${
                 isUploading ? "pointer-events-none opacity-50" : ""
               }                
@@ -24,7 +24,7 @@ export function FileUpload({
         </label>
       ) : (
         <div className="flex items-center justify-between gap-3">
-          <p className="min-w-0 truncate text-sm text-neutral-300">
+          <p className="min-w-0 truncate text-base text-neutral-300">
             {selectedFile.name}
           </p>
 
@@ -32,7 +32,7 @@ export function FileUpload({
             <button
               type="button"
               onClick={() => setSelectedFile(null)}
-              className="rounded-lg px-3 py-2 text-xs text-neutral-500 transition hover:text-white"
+              className="rounded-lg px-3 py-2 text-base text-neutral-500 transition hover:text-white"
             >
               Quitar
             </button>
@@ -41,7 +41,7 @@ export function FileUpload({
               type="button"
               onClick={uploadFile}
               disabled={isUploading}
-              className="rounded-lg border border-files/50 px-3 py-2 text-xs font-medium text-files transition hover:border-files"
+              className="rounded-lg border border-blue-700 px-3 py-2 text-base font-medium text-blue-500 transition hover:border-blue-700"
             >
               {isUploading ? "Subiendo..." : "Subir"}
             </button>

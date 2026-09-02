@@ -30,7 +30,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex min-h-[calc(100vh-8px)] rounded-2xl border border-neutral-700 bg-neutral-900">
         <main className="min-w-0 flex-1">
           <Header />
-
           <section className="p-5">{children}</section>
         </main>
       </div>

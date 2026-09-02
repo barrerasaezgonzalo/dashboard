@@ -4,6 +4,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 
 import type { Task, TaskStatus } from "@/app/types";
 import { supabase } from "../lib/supabase";
+import { errorLogger } from "../lib/errorLogger";
 
 type TaskContextType = {
   tasks: Task[];
@@ -39,11 +40,14 @@ export function TaskProvider({ children }: TaskProviderProps) {
         .from("tasks")
         .select("*")
         .order("important", { ascending: false })
-        .order("date", { ascending: false })
-        .order("created_at", { ascending: false });
+        .order("updated_at", { ascending: false });
 
       if (error) {
-        console.error("Error loading tasks:", error);
+        errorLogger.logError("Error al cargar las tareas", error, {
+          context: "TaskProvider",
+          userMessage:
+            "No se pudieron cargar las tareas. Por favor, recarga la página.",
+        });
         return;
       }
 
@@ -58,24 +62,23 @@ export function TaskProvider({ children }: TaskProviderProps) {
   }, []);
 
   const createTask = async (task: Omit<Task, "id" | "user_id">) => {
-    const { data, error } = await supabase
-      .from("tasks")
-      .insert({
-        title: task.title,
-        summary: task.summary || null,
-        date: task.date || null,
-        important: task.important,
-        status: task.status,
-      })
-      .select()
-      .single();
+    const { error } = await supabase.from("tasks").insert({
+      title: task.title,
+      summary: task.summary || null,
+      date: task.date || null,
+      important: task.important,
+      status: task.status,
+    });
 
     if (error) {
-      console.error("Error creating task:", error);
+      errorLogger.logError("Error al crear la tarea", error, {
+        context: "TaskProvider",
+        userMessage: "No se pudo crear la tarea. Por favor, intenta de nuevo.",
+      });
       throw error;
     }
 
-    setTasks((current) => [data, ...current]);
+    await loadTasks();
   };
 
   const updateTask = async (
@@ -88,57 +91,62 @@ export function TaskProvider({ children }: TaskProviderProps) {
         ...updates,
         summary: updates.summary || null,
         date: updates.date || null,
+        updated_at: new Date().toISOString(),
       })
       .eq("id", id)
       .select()
       .single();
 
     if (error) {
-      console.error("Error updating task:", error);
+      errorLogger.logError("Error al actualizar la tarea", error, {
+        context: "TaskProvider",
+        userMessage:
+          "No se pudo actualizar la tarea. Por favor, intenta de nuevo.",
+      });
       throw error;
     }
 
-    setTasks((current) =>
-      current.map((task) => (task.id === id ? data : task)),
-    );
+    await loadTasks();
+
+    setSelectedTask((current) => (current?.id === id ? data : current));
   };
 
   const changeTaskStatus = async (id: number, status: TaskStatus) => {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("tasks")
       .update({
         status,
+        updated_at: new Date().toISOString(),
       })
-      .eq("id", id)
-      .select()
-      .single();
+      .eq("id", id);
 
     if (error) {
-      console.error("Error updating task status:", error);
+      errorLogger.logError("Error al actualizar el estado de la tarea", error, {
+        context: "TaskProvider",
+        userMessage:
+          "No se pudo actualizar el estado de la tarea. Por favor, intenta de nuevo.",
+      });
       return;
     }
 
-    setTasks((current) =>
-      current.map((task) =>
-        task.id === id
-          ? {
-              ...task,
-              status: data.status,
-            }
-          : task,
-      ),
-    );
+    await loadTasks();
   };
 
   const deleteTask = async (id: number) => {
     const { error } = await supabase.from("tasks").delete().eq("id", id);
 
     if (error) {
-      console.error("Error deleting task:", error);
+      errorLogger.logError("Error al eliminar la tarea", error, {
+        context: "TaskProvider",
+        userMessage:
+          "No se pudo eliminar la tarea. Por favor, intenta de nuevo.",
+      });
       throw error;
     }
 
     setTasks((current) => current.filter((task) => task.id !== id));
+
+    setSelectedTask((current) => (current?.id === id ? null : current));
   };
 
   return (

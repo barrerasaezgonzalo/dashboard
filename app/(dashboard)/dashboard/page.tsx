@@ -1,5 +1,3 @@
-// app/(dashboard)/dashboard/page.tsx
-
 import { Dashboard } from "./Dashboard";
 
 export default function Page() {

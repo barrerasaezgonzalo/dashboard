@@ -4,13 +4,9 @@ import { createContext, useCallback, useEffect, useState } from "react";
 
 import { supabase } from "@/app/lib/supabase";
 import { useAuth } from "@/app/hooks/useAuth";
+import { errorLogger } from "@/app/lib/errorLogger";
 import { getWeekKey } from "../utils";
-import { Habit } from "../types";
-
-type CreateHabitProps = {
-  name: string;
-  days: boolean[];
-};
+import { CreateHabit, Habit, HabitDayStatus } from "../types";
 
 type UpdateHabitProps = {
   name: string;
@@ -20,8 +16,11 @@ type UpdateHabitProps = {
 type HabitContextType = {
   habits: Habit[];
   loading: boolean;
-  createHabit: (habit: CreateHabitProps) => Promise<void>;
-  updateHabitCompleted: (id: number, completed: boolean[]) => Promise<void>;
+  createHabit: (habit: CreateHabit) => Promise<void>;
+  updateHabitCompleted: (
+    id: number,
+    completed: HabitDayStatus[],
+  ) => Promise<void>;
   updateHabit: (id: number, habit: UpdateHabitProps) => Promise<void>;
   deleteHabit: (id: number) => Promise<void>;
 };
@@ -30,6 +29,7 @@ export const HabitContext = createContext<HabitContextType | null>(null);
 
 export function HabitProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+
   const [habits, setHabits] = useState<Habit[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,9 +40,11 @@ export function HabitProvider({ children }: { children: React.ReactNode }) {
       return habit;
     }
 
-    const lastCompleted = habit.completed.filter(Boolean).length;
+    const lastCompleted = habit.completed.filter(
+      (status) => status === "completed",
+    ).length;
 
-    const completed = [false, false, false, false, false, false, false];
+    const completed: HabitDayStatus[] = Array(7).fill("pending");
 
     const { error } = await supabase
       .from("habits")
@@ -54,7 +56,11 @@ export function HabitProvider({ children }: { children: React.ReactNode }) {
       .eq("id", habit.id);
 
     if (error) {
-      console.error("Error resetting habit week:", error);
+      errorLogger.logError("Error al resetear la semana del hábito", error, {
+        context: "HabitProvider",
+        userMessage:
+          "No se pudo resetear el hábito. Por favor, intenta de nuevo.",
+      });
 
       return habit;
     }
@@ -71,7 +77,6 @@ export function HabitProvider({ children }: { children: React.ReactNode }) {
     if (!user) {
       setHabits([]);
       setLoading(false);
-
       return;
     }
 
@@ -84,14 +89,17 @@ export function HabitProvider({ children }: { children: React.ReactNode }) {
       .order("id");
 
     if (error) {
-      console.error("Error loading habits:", error);
+      errorLogger.logError("Error al cargar los hábitos", error, {
+        context: "HabitProvider",
+        userMessage:
+          "No se pudieron cargar los hábitos. Por favor, recarga la página.",
+      });
 
       setLoading(false);
-
       return;
     }
 
-    const loadedHabits = data ?? [];
+    const loadedHabits = (data ?? []) as Habit[];
 
     const updatedHabits = await Promise.all(loadedHabits.map(resetHabitWeek));
 
@@ -99,35 +107,31 @@ export function HabitProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, [user]);
 
-  const createHabit = async ({ name, days }: CreateHabitProps) => {
-    if (!user) {
-      return;
-    }
+  const createHabit = async (habit: CreateHabit) => {
+    const completed: HabitDayStatus[] = Array(7).fill("pending");
 
-    const completed = [false, false, false, false, false, false, false];
-
-    const { data, error } = await supabase
-      .from("habits")
-      .insert({
-        user_id: user.id,
-        name,
-        days,
-        completed,
-        last_completed: 0,
-      })
-      .select()
-      .single();
+    const { error } = await supabase.from("habits").insert({
+      name: habit.name,
+      days: habit.days,
+      completed,
+    });
 
     if (error) {
-      console.error("Error creating habit:", error);
+      errorLogger.logError("Error al crear el hábito", error, {
+        context: "HabitProvider",
+        userMessage: "No se pudo crear el hábito. Por favor, intenta de nuevo.",
+      });
 
       return;
     }
 
-    setHabits((current) => [...current, data]);
+    await loadHabits();
   };
 
-  const updateHabitCompleted = async (id: number, completed: boolean[]) => {
+  const updateHabitCompleted = async (
+    id: number,
+    completed: HabitDayStatus[],
+  ) => {
     const { error } = await supabase
       .from("habits")
       .update({
@@ -136,7 +140,11 @@ export function HabitProvider({ children }: { children: React.ReactNode }) {
       .eq("id", id);
 
     if (error) {
-      console.error("Error updating habit:", error);
+      errorLogger.logError("Error al actualizar el hábito completado", error, {
+        context: "HabitProvider",
+        userMessage:
+          "No se pudo actualizar el hábito. Por favor, intenta de nuevo.",
+      });
 
       return;
     }
@@ -163,7 +171,11 @@ export function HabitProvider({ children }: { children: React.ReactNode }) {
       .eq("id", id);
 
     if (error) {
-      console.error("Error updating habit:", error);
+      errorLogger.logError("Error al actualizar el hábito", error, {
+        context: "HabitProvider",
+        userMessage:
+          "No se pudo actualizar el hábito. Por favor, intenta de nuevo.",
+      });
 
       return;
     }
@@ -185,7 +197,11 @@ export function HabitProvider({ children }: { children: React.ReactNode }) {
     const { error } = await supabase.from("habits").delete().eq("id", id);
 
     if (error) {
-      console.error("Error deleting habit:", error);
+      errorLogger.logError("Error al eliminar el hábito", error, {
+        context: "HabitProvider",
+        userMessage:
+          "No se pudo eliminar el hábito. Por favor, intenta de nuevo.",
+      });
 
       return;
     }

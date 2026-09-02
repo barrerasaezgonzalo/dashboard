@@ -14,21 +14,12 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
 
 @theme {
-  --color-tasks: #3b82f6;
-  --color-notes: #f59e0b;
-  --color-habits: #06b6d4;
-  --color-wellness: #10b981;
-  --color-debts: #f97316;
-  --color-files: #8b5cf6;
-  --color-calendar: #f43f5e;
   --color-notifications: #d946ef;
-  --color-prompts: #bbaa00;
 }
 
 body {

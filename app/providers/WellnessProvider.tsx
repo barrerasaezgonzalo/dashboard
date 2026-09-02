@@ -3,7 +3,9 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 
 import { supabase } from "@/app/lib/supabase";
+import { errorLogger } from "@/app/lib/errorLogger";
 import { useAuth } from "@/app/hooks/useAuth";
+
 import {
   CheckIn,
   CheckInAnswer,
@@ -11,6 +13,7 @@ import {
   PlanStatus,
   PlanTaskStatus,
 } from "../types";
+import { showResponseMessage } from "../utils";
 
 type CreateCheckInProps = {
   answers: CheckInAnswer[];
@@ -31,7 +34,12 @@ type CreatePlanProps = {
 
 type WellnessContextType = {
   activePlan: Plan | null;
+  selectedPlan: Plan | null;
+  planHistory: Plan[];
   loading: boolean;
+
+  selectPlan: (plan: Plan) => void;
+  clearSelectedPlan: () => void;
 
   createCheckIn: (data: CreateCheckInProps) => Promise<CheckIn | null>;
 
@@ -43,14 +51,36 @@ type WellnessContextType = {
   ) => Promise<void>;
 
   updatePlanStatus: (planId: number, status: PlanStatus) => Promise<void>;
+
+  loadPlanHistory: () => Promise<void>;
+
+  deletePlan: (id: number) => Promise<void>;
+
+  responseOperationMessage: string;
 };
 
 export const WellnessContext = createContext<WellnessContextType | null>(null);
 
 export function WellnessProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+
+  const [responseOperationMessage, setResponseOperationMessage] = useState("");
+
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
+
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+
+  const [planHistory, setPlanHistory] = useState<Plan[]>([]);
+
   const [loading, setLoading] = useState(true);
+
+  const selectPlan = (plan: Plan) => {
+    setSelectedPlan(plan);
+  };
+
+  const clearSelectedPlan = () => {
+    setSelectedPlan(null);
+  };
 
   const loadActivePlan = useCallback(async () => {
     if (!user) {
@@ -58,21 +88,71 @@ export function WellnessProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
       return;
     }
+
     setLoading(true);
+
     const { data, error } = await supabase
       .from("wellness_plans")
-      .select(` *, tasks:wellness_plan_tasks(*)`)
+      .select(
+        `
+        *,
+        tasks:wellness_plan_tasks(*)
+      `,
+      )
       .eq("status", "active")
       .maybeSingle();
 
     if (error) {
-      console.error("Error loading active plan:", error);
+      errorLogger.logError(
+        "Error al cargar el plan activo de bienestar",
+        error,
+        {
+          context: "WellnessProvider",
+          userMessage:
+            "No se pudo cargar el plan de bienestar. Por favor, recarga la página.",
+        },
+      );
       setLoading(false);
       return;
     }
 
     setActivePlan(data ?? null);
     setLoading(false);
+  }, [user]);
+
+  const loadPlanHistory = useCallback(async () => {
+    if (!user) {
+      setPlanHistory([]);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("wellness_plans")
+      .select(
+        `
+        *,
+        tasks:wellness_plan_tasks(*)
+      `,
+      )
+      .neq("status", "active")
+      .order("created_at", {
+        ascending: false,
+      });
+
+    if (error) {
+      errorLogger.logError(
+        "Error al cargar el historial de planes de bienestar",
+        error,
+        {
+          context: "WellnessProvider",
+          userMessage:
+            "No se pudo cargar el historial de planes. Por favor, intenta de nuevo.",
+        },
+      );
+      return;
+    }
+
+    setPlanHistory(data ?? []);
   }, [user]);
 
   const createCheckIn = async ({ answers }: CreateCheckInProps) => {
@@ -82,14 +162,21 @@ export function WellnessProvider({ children }: { children: React.ReactNode }) {
 
     const { data, error } = await supabase
       .from("wellness_checkins")
-      .insert({ answers })
+      .insert({
+        answers,
+      })
       .select()
       .single();
 
     if (error) {
-      console.error("Error creating check-in:", error);
+      errorLogger.logError("Error al crear el check-in de bienestar", error, {
+        context: "WellnessProvider",
+        userMessage:
+          "No se pudo crear el check-in. Por favor, intenta de nuevo.",
+      });
       return null;
     }
+
     return data;
   };
 
@@ -99,10 +186,9 @@ export function WellnessProvider({ children }: { children: React.ReactNode }) {
     summary,
     tasks,
   }: CreatePlanProps) => {
-    if (!user) {
+    if (!user || activePlan) {
       return;
     }
-    if (activePlan) return;
 
     const { data: plan, error } = await supabase
       .from("wellness_plans")
@@ -116,7 +202,10 @@ export function WellnessProvider({ children }: { children: React.ReactNode }) {
       .single();
 
     if (error || !plan) {
-      console.error("Error creating plan:", error);
+      errorLogger.logError("Error al crear el plan de bienestar", error, {
+        context: "WellnessProvider",
+        userMessage: "No se pudo crear el plan. Por favor, intenta de nuevo.",
+      });
       return;
     }
 
@@ -134,11 +223,24 @@ export function WellnessProvider({ children }: { children: React.ReactNode }) {
       .select();
 
     if (tasksError) {
-      console.error("Error creating plan tasks:", tasksError);
+      errorLogger.logError(
+        "Error al crear las tareas del plan de bienestar",
+        tasksError,
+        {
+          context: "WellnessProvider",
+          userMessage:
+            "Error al crear las tareas del plan. Por favor, intenta de nuevo.",
+        },
+      );
       return;
     }
 
-    setActivePlan({ ...plan, tasks: createdTasks ?? [] });
+    setSelectedPlan(null);
+
+    setActivePlan({
+      ...plan,
+      tasks: createdTasks ?? [],
+    });
   };
 
   const updatePlanTaskStatus = async (
@@ -147,11 +249,21 @@ export function WellnessProvider({ children }: { children: React.ReactNode }) {
   ) => {
     const { error } = await supabase
       .from("wellness_plan_tasks")
-      .update({ status })
+      .update({
+        status,
+      })
       .eq("id", taskId);
 
     if (error) {
-      console.error("Error updating plan task:", error);
+      errorLogger.logError(
+        "Error al actualizar el estado de la tarea del plan",
+        error,
+        {
+          context: "WellnessProvider",
+          userMessage:
+            "No se pudo actualizar la tarea. Por favor, intenta de nuevo.",
+        },
+      );
       return;
     }
 
@@ -163,39 +275,93 @@ export function WellnessProvider({ children }: { children: React.ReactNode }) {
       return {
         ...current,
         tasks: current.tasks.map((task) =>
-          task.id === taskId ? { ...task, status } : task,
+          task.id === taskId
+            ? {
+                ...task,
+                status,
+              }
+            : task,
         ),
       };
     });
   };
 
-  const updatePlanStatus = async (planId: number, status: PlanStatus) => {
+  const deletePlan = async (planId: number) => {
     const { error } = await supabase
       .from("wellness_plans")
-      .update({ status })
+      .delete()
       .eq("id", planId);
 
     if (error) {
-      console.error("Error updating plan status:", error);
+      errorLogger.logError("Error al eliminar el plan de bienestar", error, {
+        context: "WellnessProvider",
+        userMessage:
+          "No se pudo eliminar el plan. Por favor, intenta de nuevo.",
+      });
       return;
     }
+    showResponseMessage(
+      setResponseOperationMessage,
+      "Plan eliminado correctamente.",
+    );
+    setSelectedPlan(null);
+
+    await loadPlanHistory();
+  };
+
+  const updatePlanStatus = async (planId: number, status: PlanStatus) => {
+    const { error } = await supabase
+      .from("wellness_plans")
+      .update({
+        status,
+      })
+      .eq("id", planId);
+
+    if (error) {
+      errorLogger.logError(
+        "Error al actualizar el estado del plan de bienestar",
+        error,
+        {
+          context: "WellnessProvider",
+          userMessage:
+            "No se pudo actualizar el estado del plan. Por favor, intenta de nuevo.",
+        },
+      );
+      return;
+    }
+
     setActivePlan(null);
-    setLoading(false);
+    setSelectedPlan(null);
+
+    await loadPlanHistory();
   };
 
   useEffect(() => {
     loadActivePlan();
-  }, [loadActivePlan]);
+    loadPlanHistory();
+  }, [loadActivePlan, loadPlanHistory]);
 
   return (
     <WellnessContext.Provider
       value={{
         activePlan,
+        selectedPlan,
+        planHistory,
         loading,
+
+        selectPlan,
+        clearSelectedPlan,
+
         createCheckIn,
         createPlan,
+
         updatePlanTaskStatus,
         updatePlanStatus,
+
+        loadPlanHistory,
+        deletePlan,
+
+        responseOperationMessage,
       }}
     >
       {children}

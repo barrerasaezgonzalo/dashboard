@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { errorLogger } from "@/app/lib/errorLogger";
 
 export function usePrompt() {
   const [prompt, setPrompt] = useState("");
@@ -23,7 +24,11 @@ export function usePrompt() {
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("Error generating prompt:", data.error);
+        errorLogger.logError("Error al mejorar el prompt", data.error, {
+          context: "usePrompt",
+          userMessage:
+            "Error al mejorar el prompt. Por favor, intenta de nuevo.",
+        });
         return;
       }
 

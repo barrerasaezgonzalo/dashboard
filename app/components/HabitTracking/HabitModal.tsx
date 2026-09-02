@@ -1,8 +1,8 @@
 "use client";
 
 import { weekDays } from "@/app/constants";
-import { HabitModalProps } from "@/app/types";
-import { Save, X } from "lucide-react";
+import { HabitModalProps } from "@/app/types/habits";
+import { X } from "lucide-react";
 
 export function HabitModal({
   isOpen,
@@ -16,9 +16,6 @@ export function HabitModal({
   onClose,
   onSubmit,
 }: HabitModalProps) {
-  const invalidName = name.trim().length < 3;
-  const invalidDays = !days.some(Boolean);
-
   if (!isOpen) {
     return null;
   }
@@ -34,13 +31,9 @@ export function HabitModal({
       >
         <header className="flex items-center justify-between border-b border-neutral-700 px-5 py-4">
           <div>
-            <h3 className="font-semibold text-neutral-200">
-              {habit ? "Editar hábito" : "Nuevo hábito"}
+            <h3 className="font-semibold text-neutral-200 text-xl">
+              {habit ? "Editar hábito" : "Agregar hábito"}
             </h3>
-
-            <p className="mt-1 text-sm text-neutral-500">
-              Selecciona los días que quieres realizarlo.
-            </p>
           </div>
 
           <button
@@ -55,7 +48,7 @@ export function HabitModal({
 
         <div className="space-y-5 p-5">
           <label className="block">
-            <span className="mb-2 block text-sm text-neutral-400">
+            <span className="mb-2 block text-lg text-neutral-400">
               Nombre <span className="ml-1 text-orange-400">*</span>
             </span>
 
@@ -65,34 +58,27 @@ export function HabitModal({
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Ej: Caminar 30 min"
-              className={`h-10 w-full rounded-lg border bg-neutral-900 px-3 text-sm text-neutral-200 outline-none placeholder:text-neutral-600
-                                ${
-                                  invalidName
-                                    ? "border-orange-700 focus:border-orange-700"
-                                    : "border-neutral-700 focus:border-habits/60"
-                                }`}
+              className={`h-11 w-full rounded-lg border bg-transparent px-3 text-base text-white outline-none transition placeholder:text-neutral-500 border-neutral-600`}
             />
           </label>
 
           <div>
-            <span className="mb-2 block text-sm text-neutral-400">
+            <span className="mb-2 block text-lg text-neutral-400">
               Días <span className="ml-1 text-orange-400">*</span>
             </span>
 
             <div
-              className={`flex flex-wrap gap-2 rounded-lg border p-2 ${
-                invalidDays ? "border-orange-700" : "border-transparent"
-              }`}
+              className={`flex flex-wrap gap-2 rounded-lg border p-2 border-transparent`}
             >
               {weekDays.map((day, index) => (
                 <button
                   key={day}
                   type="button"
                   onClick={() => onToggleDay(index)}
-                  className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border text-sm font-medium transition ${
+                  className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border text-base font-medium transition ${
                     days[index]
-                      ? "border-habits bg-habits/10 text-habits"
-                      : "border-neutral-700 text-neutral-500 hover:border-habits/60 hover:text-habits"
+                      ? "border-cyan-600 bg-cyan-500/15 text-cyan-500"
+                      : "border-neutral-600 text-neutral-400 hover:border-cyan/60 hover:text-cyan-400"
                   }`}
                 >
                   {day}
@@ -106,7 +92,7 @@ export function HabitModal({
           <button
             type="button"
             onClick={onClose}
-            className="h-9 cursor-pointer rounded-lg border border-neutral-700 px-4 text-sm text-neutral-400 transition hover:bg-neutral-700"
+            className="cursor-pointer rounded-lg border border-neutral-700 px-4 py-2 text-base font-medium text-neutral-400 transition hover:bg-neutral-700"
           >
             Cancelar
           </button>
@@ -115,10 +101,10 @@ export function HabitModal({
             type="button"
             disabled={invalidHabit || saving}
             onClick={onSubmit}
-            className="flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-habits/50 bg-habits/10 px-4 text-sm text-habits transition hover:border-habits disabled:cursor-not-allowed disabled:border-neutral-700 disabled:bg-neutral-700/20 disabled:text-neutral-600"
+            className={`cursor-pointer rounded-lg px-4 py-2 text-base font-medium text-white transition bg-cyan-500 hover:bg-cyan-600 
+                disabled:opacity-40 disabled:cursor-not-allowed
+            }`}
           >
-            <Save size={16} />
-
             {saving ? "Guardando..." : habit ? "Guardar" : "Crear"}
           </button>
         </footer>

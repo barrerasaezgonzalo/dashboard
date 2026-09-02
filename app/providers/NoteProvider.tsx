@@ -10,6 +10,7 @@ import {
 
 import type { MapNoteProps, Note } from "@/app/types";
 import { supabase } from "@/app/lib/supabase";
+import { errorLogger } from "@/app/lib/errorLogger";
 
 type NoteContextType = {
   notes: Note[];
@@ -55,7 +56,11 @@ export function NoteProvider({ children }: NoteProviderProps) {
         .order("updated_at", { ascending: false });
 
       if (error) {
-        console.error("Error loading notes:", error);
+        errorLogger.logError("Error al cargar las notas", error, {
+          context: "NoteProvider",
+          userMessage:
+            "No se pudieron cargar las notas. Por favor, recarga la página.",
+        });
         return;
       }
 
@@ -81,7 +86,10 @@ export function NoteProvider({ children }: NoteProviderProps) {
       .single();
 
     if (error) {
-      console.error("Error creating note:", error);
+      errorLogger.logError("Error al crear la nota", error, {
+        context: "NoteProvider",
+        userMessage: "No se pudo crear la nota. Por favor, intenta de nuevo.",
+      });
       throw error;
     }
 
@@ -116,7 +124,11 @@ export function NoteProvider({ children }: NoteProviderProps) {
       .single();
 
     if (error) {
-      console.error("Error updating note:", error);
+      errorLogger.logError("Error al actualizar la nota", error, {
+        context: "NoteProvider",
+        userMessage:
+          "No se pudo actualizar la nota. Por favor, intenta de nuevo.",
+      });
       throw error;
     }
 
@@ -131,7 +143,11 @@ export function NoteProvider({ children }: NoteProviderProps) {
     const { error } = await supabase.from("notes").delete().eq("id", id);
 
     if (error) {
-      console.error("Error deleting note:", error);
+      errorLogger.logError("Error al eliminar la nota", error, {
+        context: "NoteProvider",
+        userMessage:
+          "No se pudo eliminar la nota. Por favor, intenta de nuevo.",
+      });
       throw error;
     }
 
