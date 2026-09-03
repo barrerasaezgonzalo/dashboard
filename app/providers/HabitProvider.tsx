@@ -108,25 +108,31 @@ export function HabitProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const createHabit = async (habit: CreateHabit) => {
-    const completed: HabitDayStatus[] = Array(7).fill("pending");
+  if (!user) {
+    return;
+  }
 
-    const { error } = await supabase.from("habits").insert({
-      name: habit.name,
-      days: habit.days,
-      completed,
+  const completed: HabitDayStatus[] = Array(7).fill("pending");
+
+  const { error } = await supabase.from("habits").insert({
+    user_id: user.id,
+    name: habit.name,
+    days: habit.days,
+    completed,
+    last_reset_week: getWeekKey(),
+  });
+
+  if (error) {
+    errorLogger.logError("Error al crear el hábito", error, {
+      context: "HabitProvider",
+      userMessage: "No se pudo crear el hábito. Por favor, intenta de nuevo.",
     });
 
-    if (error) {
-      errorLogger.logError("Error al crear el hábito", error, {
-        context: "HabitProvider",
-        userMessage: "No se pudo crear el hábito. Por favor, intenta de nuevo.",
-      });
+    return;
+  }
 
-      return;
-    }
-
-    await loadHabits();
-  };
+  await loadHabits();
+};
 
   const updateHabitCompleted = async (
     id: number,
