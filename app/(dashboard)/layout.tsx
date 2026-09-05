@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Header } from "@/app/components/Ui/Header";
 import { useAuth } from "@/app/hooks/useAuth";
 import { ScrollToTop } from "../components/Ui/scrollToTop";
@@ -12,14 +10,7 @@ type DashboardLayoutProps = {
 };
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();
-
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      router.replace("/login");
-    }
-  }, [loading, isAuthenticated, router]);
+  const { loading } = useAuth();
 
   if (loading) {
     return <DashboardSkeleton />;
@@ -27,13 +18,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="min-h-screen bg-neutral-900 text-neutral-200">
-      <div className="flex min-h-[calc(100vh-8px)] rounded-2xl border border-neutral-700 bg-neutral-900">
-        <main className="min-w-0 flex-1">
+      <div className="flex min-h-screen bg-neutral-900">
+        <main className="min-w-0">
           <Header />
-          <section className="p-5">{children}</section>
+          <section className="pt-2">{children}</section>
         </main>
       </div>
-
       <ScrollToTop />
     </div>
   );

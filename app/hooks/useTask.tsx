@@ -1,10 +1,11 @@
 "use client";
 
 import { useContext, useState } from "react";
-import { Task, TaskFormData, TaskGroupConfig, TaskStatus } from "../types";
+import { Check, Circle, CircleGauge } from "lucide-react";
+
 import { TaskContext } from "../providers/TaskProvider";
+import type { Task, TaskFormData, TaskGroupConfig, TaskStatus } from "../types";
 import { isDateOverdue, showResponseMessage } from "../utils";
-import { Circle, CircleGauge, Check } from "lucide-react";
 
 export function useTask() {
   const context = useContext(TaskContext);
@@ -12,25 +13,38 @@ export function useTask() {
   if (!context) {
     throw new Error("useTask debe usarse dentro de TaskProvider");
   }
-  const {
-    tasks,
-    changeTaskStatus,
-    createTask,
-    updateTask,
-    deleteTask,
-    selectedTask,
-    setSelectedTask,
-  } = context;
+
+  const { tasks, changeTaskStatus, createTask, updateTask, deleteTask } =
+    context;
+
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [responseOperationMessage, setResponseOperationMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const todoTasks = tasks.filter((task) => task.status === "todo");
+
   const inProgressTasks = tasks.filter((task) => task.status === "in_progress");
+
   const doneTasks = tasks.filter((task) => task.status === "done");
+
   const totalTasks = tasks.length;
-  const overdueTasks = tasks.filter((task) => {
-    return task.status !== "done" && !!task.date && isDateOverdue(task.date);
-  });
+
+  const overdueTasks = tasks.filter(
+    (task) => task.status !== "done" && !!task.date && isDateOverdue(task.date),
+  );
+
+  function getNextStatus(status: TaskStatus): TaskStatus {
+    if (status === "todo") {
+      return "in_progress";
+    }
+
+    if (status === "in_progress") {
+      return "done";
+    }
+
+    return "todo";
+  }
 
   const handleNextStatus = (taskId: number, status?: TaskStatus) => {
     const task = tasks.find((task) => task.id === taskId);
@@ -52,6 +66,7 @@ export function useTask() {
       important: data.important,
       status: "todo",
     });
+
     showResponseMessage(
       setResponseOperationMessage,
       "Tarea creada correctamente.",
@@ -59,7 +74,9 @@ export function useTask() {
   };
 
   const handleUpdateTask = async (data: TaskFormData) => {
-    if (!selectedTask) return;
+    if (!selectedTask) {
+      return;
+    }
 
     await updateTask(selectedTask.id, {
       title: data.title,
@@ -75,12 +92,17 @@ export function useTask() {
   };
 
   const handleDeleteTask = async () => {
-    if (!selectedTask) return;
+    if (!selectedTask) {
+      return;
+    }
+
     await deleteTask(selectedTask.id);
+
     showResponseMessage(
       setResponseOperationMessage,
       "Tarea eliminada correctamente.",
     );
+
     setIsDeleteModalOpen(false);
     setSelectedTask(null);
   };
@@ -99,16 +121,6 @@ export function useTask() {
     setSelectedTask(task);
     setIsDeleteModalOpen(true);
   };
-
-  function getNextStatus(status: TaskStatus): TaskStatus {
-    if (status === "todo") {
-      return "in_progress";
-    }
-    if (status === "in_progress") {
-      return "done";
-    }
-    return "todo";
-  }
 
   const taskGroupConfig: TaskGroupConfig[] = [
     {
@@ -148,24 +160,21 @@ export function useTask() {
     totalTasks,
     todoTasks,
     overdueTasks,
-    handleNextStatus,
     taskGroupConfig,
-    createTask,
-    updateTask,
-    deleteTask,
-    handleOpenCreate,
+    selectedTask,
     responseOperationMessage,
+    isModalOpen,
+    isDeleteModalOpen,
+    setSelectedTask,
+    setIsModalOpen,
+    setIsDeleteModalOpen,
+    handleNextStatus,
+    handleOpenCreate,
     handleOpenEdit,
     handleOpenDelete,
-    isModalOpen,
-    setIsModalOpen,
-    selectedTask,
     handleUpdateTask,
     handleCreateTask,
-    isDeleteModalOpen,
-    setIsDeleteModalOpen,
     handleDeleteTask,
-    setSelectedTask,
     getNextStatus,
   };
 }

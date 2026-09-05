@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { errorLogger } from "@/app/lib/errorLogger";
 import type { TaskModalProps } from "@/app/types";
 
 export function useTaskModal({
@@ -57,11 +56,7 @@ export function useTaskModal({
       handleReset();
       onClose();
     } catch (error) {
-      errorLogger.logError("Error al guardar la tarea", error, {
-        context: "useTaskModal",
-        userMessage:
-          "No se pudo guardar la tarea. Por favor, intenta de nuevo.",
-      });
+      console.error("Error al guardar la tarea", error);
     } finally {
       setSaving(false);
     }

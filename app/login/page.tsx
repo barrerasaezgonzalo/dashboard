@@ -2,18 +2,21 @@
 
 import { LogIn } from "lucide-react";
 import { useAuth } from "@/app/hooks/useAuth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useState } from "react";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { loginWithGoogle, loading, isAuthenticated } = useAuth();
+  const { loginWithGoogle } = useAuth();
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  useEffect(() => {
-    if (!loading && isAuthenticated) {
-      router.replace("/");
+  const handleLogin = async () => {
+    setIsLoggingIn(true);
+
+    try {
+      await loginWithGoogle();
+    } catch {
+      setIsLoggingIn(false);
     }
-  }, [loading, isAuthenticated, router]);
+  };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-neutral-950 px-6 text-neutral-200">
@@ -32,11 +35,11 @@ export default function LoginPage() {
 
         <button
           type="button"
-          onClick={loginWithGoogle}
-          disabled={loading}
+          onClick={handleLogin}
+          disabled={isLoggingIn}
           className="flex h-11 w-full cursor-pointer items-center justify-center rounded-lg bg-blue-500 px-4 text-sm font-medium text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {loading ? "Conectando..." : "Entrar con Google"}
+          {isLoggingIn ? "Conectando..." : "Entrar con Google"}
         </button>
 
         <p className="mt-5 text-center text-xs text-neutral-600">

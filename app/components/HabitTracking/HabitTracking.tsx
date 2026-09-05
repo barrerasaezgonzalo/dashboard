@@ -9,6 +9,7 @@ import { ConfirmModal } from "../Ui/ConfirmModal";
 import { Toast } from "../Ui/Toast";
 import { SectionActionButton } from "../Ui/SectionActionButton";
 import { HabitGroup } from "./HabitGroup";
+import { useHabitItem } from "@/app/hooks/useHabitItem";
 
 export function HabitTracking() {
   const {
@@ -24,7 +25,6 @@ export function HabitTracking() {
     days,
     saving,
     invalidHabit,
-    handleToggleCompleted,
     handleToggleDay,
     handleOpenCreate,
     handleOpenEdit,
@@ -33,6 +33,7 @@ export function HabitTracking() {
     handleSaveHabit,
     handleDeleteHabit,
   } = useHabit();
+  const { handleToggleCompleted } = useHabitItem();
 
   return (
     <DashboardSection
@@ -44,14 +45,7 @@ export function HabitTracking() {
           color="cyan"
         />
       }
-      header={
-        <SectionHeader
-          title="Hábitos"
-          description="Seguimiento de esta semana."
-          icon={ListClock}
-          color="cyan"
-        />
-      }
+      header={<SectionHeader title="Hábitos" icon={ListClock} color="cyan" />}
     >
       <HabitGroup
         habits={habits}

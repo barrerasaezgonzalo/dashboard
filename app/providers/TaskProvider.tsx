@@ -1,10 +1,15 @@
 "use client";
 
-import { createContext, ReactNode, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import type { Task, TaskStatus } from "@/app/types";
-import { supabase } from "../lib/supabase";
-import { errorLogger } from "../lib/errorLogger";
+import { supabase } from "../lib/supabaseClient";
 
 type TaskContextType = {
   tasks: Task[];
@@ -17,8 +22,6 @@ type TaskContextType = {
   changeTaskStatus: (id: number, status: TaskStatus) => Promise<void>;
   deleteTask: (id: number) => Promise<void>;
   loadTasks: () => Promise<void>;
-  selectedTask: Task | null;
-  setSelectedTask: (task: Task | null) => void;
 };
 
 export const TaskContext = createContext<TaskContextType | null>(null);
@@ -30,24 +33,29 @@ type TaskProviderProps = {
 export function TaskProvider({ children }: TaskProviderProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     try {
       setLoading(true);
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setTasks([]);
+        return;
+      }
 
       const { data, error } = await supabase
         .from("tasks")
         .select("*")
+        .eq("user_id", user.id)
         .order("important", { ascending: false })
         .order("updated_at", { ascending: false });
 
       if (error) {
-        errorLogger.logError("Error al cargar las tareas", error, {
-          context: "TaskProvider",
-          userMessage:
-            "No se pudieron cargar las tareas. Por favor, recarga la página.",
-        });
+        console.error("Error al cargar las tareas", error);
         return;
       }
 
@@ -55,36 +63,54 @@ export function TaskProvider({ children }: TaskProviderProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadTasks();
-  }, []);
+  }, [loadTasks]);
 
   const createTask = async (task: Omit<Task, "id" | "user_id">) => {
-    const { error } = await supabase.from("tasks").insert({
-      title: task.title,
-      summary: task.summary || null,
-      date: task.date || null,
-      important: task.important,
-      status: task.status,
-    });
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("No autorizado");
+    }
+
+    const { data, error } = await supabase
+      .from("tasks")
+      .insert({
+        user_id: user.id,
+        title: task.title,
+        summary: task.summary || null,
+        date: task.date || null,
+        important: task.important,
+        status: task.status,
+      })
+      .select()
+      .single();
 
     if (error) {
-      errorLogger.logError("Error al crear la tarea", error, {
-        context: "TaskProvider",
-        userMessage: "No se pudo crear la tarea. Por favor, intenta de nuevo.",
-      });
+      console.error("Error al crear la tarea", error);
       throw error;
     }
 
-    await loadTasks();
+    setTasks((current) => [data, ...current]);
   };
 
   const updateTask = async (
     id: number,
     updates: Partial<Omit<Task, "id" | "user_id">>,
   ) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("No autorizado");
+    }
+
     const { data, error } = await supabase
       .from("tasks")
       .update({
@@ -94,59 +120,71 @@ export function TaskProvider({ children }: TaskProviderProps) {
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)
+      .eq("user_id", user.id)
       .select()
       .single();
 
     if (error) {
-      errorLogger.logError("Error al actualizar la tarea", error, {
-        context: "TaskProvider",
-        userMessage:
-          "No se pudo actualizar la tarea. Por favor, intenta de nuevo.",
-      });
+      console.error("Error al actualizar la tarea", error);
       throw error;
     }
 
-    await loadTasks();
-
-    setSelectedTask((current) => (current?.id === id ? data : current));
+    setTasks((current) =>
+      current.map((task) => (task.id === id ? data : task)),
+    );
   };
 
   const changeTaskStatus = async (id: number, status: TaskStatus) => {
-    const { error } = await supabase
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("No autorizado");
+    }
+
+    const { data, error } = await supabase
       .from("tasks")
       .update({
         status,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", id);
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .select()
+      .single();
 
     if (error) {
-      errorLogger.logError("Error al actualizar el estado de la tarea", error, {
-        context: "TaskProvider",
-        userMessage:
-          "No se pudo actualizar el estado de la tarea. Por favor, intenta de nuevo.",
-      });
-      return;
+      console.error("Error al actualizar el estado de la tarea", error);
+      throw error;
     }
 
-    await loadTasks();
+    setTasks((current) =>
+      current.map((task) => (task.id === id ? data : task)),
+    );
   };
 
   const deleteTask = async (id: number) => {
-    const { error } = await supabase.from("tasks").delete().eq("id", id);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("No autorizado");
+    }
+
+    const { error } = await supabase
+      .from("tasks")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
 
     if (error) {
-      errorLogger.logError("Error al eliminar la tarea", error, {
-        context: "TaskProvider",
-        userMessage:
-          "No se pudo eliminar la tarea. Por favor, intenta de nuevo.",
-      });
+      console.error("Error al eliminar la tarea", error);
       throw error;
     }
 
     setTasks((current) => current.filter((task) => task.id !== id));
-
-    setSelectedTask((current) => (current?.id === id ? null : current));
   };
 
   return (
@@ -159,8 +197,6 @@ export function TaskProvider({ children }: TaskProviderProps) {
         changeTaskStatus,
         deleteTask,
         loadTasks,
-        selectedTask,
-        setSelectedTask,
       }}
     >
       {children}

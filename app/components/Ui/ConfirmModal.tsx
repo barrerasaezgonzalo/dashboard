@@ -24,6 +24,10 @@ export function ConfirmModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-modal-title"
+        aria-describedby="confirm-modal-description"
         onClick={(event) => event.stopPropagation()}
         className="w-full max-w-md overflow-hidden rounded-xl border border-neutral-700 bg-neutral-800 shadow-2xl"
       >
@@ -41,16 +45,25 @@ export function ConfirmModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-neutral-400 transition bg-neutral-700 hover:text-white"
+            aria-label="Cerrar modal"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-neutral-700 text-neutral-400 transition hover:text-white"
           >
             <X size={18} />
           </button>
         </div>
 
         <div className="px-5 pb-5 pt-4">
-          <h2 className="text-xl font-semibold text-white">{title}</h2>
+          <h2
+            id="confirm-modal-title"
+            className="text-xl font-semibold text-white"
+          >
+            {title}
+          </h2>
 
-          <p className="mt-2 text-base leading-6 text-neutral-400">
+          <p
+            id="confirm-modal-description"
+            className="mt-2 text-base leading-6 text-neutral-400"
+          >
             {description}
           </p>
         </div>

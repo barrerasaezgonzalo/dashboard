@@ -1,6 +1,6 @@
-export type ExpenseStatus = "pending" | "paid";
+type ExpenseStatus = "pending" | "paid";
 
-export type ExpenseCategory = {
+type ExpenseCategory = {
   id: number;
   user_id: string;
   title: string;
@@ -24,23 +24,16 @@ export type Expense = {
 
 export type ExpenseGroupProps = {
   expenses: Expense[];
-  onAmountChange: (id: number, amount: number) => Promise<void>;
 };
 
 export type ExpenseItemProps = {
   expense: Expense;
-  onAmountChange: (id: number, amount: number) => Promise<void>;
 };
 
 export type ExpenseModalProps = {
   isOpen: boolean;
-  categories: ExpenseCategory[];
+  title: string;
+  setTitle: (value: string) => void;
   onClose: () => void;
-  onCreate: (title: string) => Promise<void>;
-  onUpdate: (id: number, title: string) => Promise<void>;
-  onDelete: (id: number) => Promise<void>;
-};
-export type UseExpenseItemProps = {
-  expense: Expense;
-  onAmountChange: (id: number, amount: number) => Promise<void>;
+  onSubmit: () => Promise<void>;
 };

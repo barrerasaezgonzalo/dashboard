@@ -9,8 +9,7 @@ import {
 } from "react";
 
 import type { MapNoteProps, Note } from "@/app/types";
-import { supabase } from "@/app/lib/supabase";
-import { errorLogger } from "@/app/lib/errorLogger";
+import { supabase } from "@/app/lib/supabaseClient";
 
 type NoteContextType = {
   notes: Note[];
@@ -22,8 +21,6 @@ type NoteContextType = {
   ) => Promise<void>;
   deleteNote: (id: number) => Promise<void>;
   loadNotes: () => Promise<void>;
-  selectedNote: Note | null;
-  setSelectedNote: React.Dispatch<React.SetStateAction<Note | null>>;
 };
 
 export const NoteContext = createContext<NoteContextType | null>(null);
@@ -35,7 +32,6 @@ type NoteProviderProps = {
 export function NoteProvider({ children }: NoteProviderProps) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   const mapNote = (note: MapNoteProps): Note => ({
     id: note.id,
@@ -49,18 +45,24 @@ export function NoteProvider({ children }: NoteProviderProps) {
     try {
       setLoading(true);
 
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setNotes([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("notes")
         .select("*")
+        .eq("user_id", user.id)
         .order("important", { ascending: false })
         .order("updated_at", { ascending: false });
 
       if (error) {
-        errorLogger.logError("Error al cargar las notas", error, {
-          context: "NoteProvider",
-          userMessage:
-            "No se pudieron cargar las notas. Por favor, recarga la página.",
-        });
+        console.error("Error al cargar las notas", error);
         return;
       }
 
@@ -75,9 +77,18 @@ export function NoteProvider({ children }: NoteProviderProps) {
   }, [loadNotes]);
 
   const createNote = async (note: Omit<Note, "id" | "user_id">) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("No autorizado");
+    }
+
     const { data, error } = await supabase
       .from("notes")
       .insert({
+        user_id: user.id,
         title: note.title,
         content: note.content || null,
         important: note.important,
@@ -86,10 +97,7 @@ export function NoteProvider({ children }: NoteProviderProps) {
       .single();
 
     if (error) {
-      errorLogger.logError("Error al crear la nota", error, {
-        context: "NoteProvider",
-        userMessage: "No se pudo crear la nota. Por favor, intenta de nuevo.",
-      });
+      console.error("Error al crear la nota", error);
       throw error;
     }
 
@@ -100,19 +108,24 @@ export function NoteProvider({ children }: NoteProviderProps) {
     id: number,
     updates: Partial<Omit<Note, "id" | "user_id">>,
   ) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("No autorizado");
+    }
+
     const payload = {
       ...(updates.title !== undefined && {
         title: updates.title,
       }),
-
       ...(updates.content !== undefined && {
         content: updates.content || null,
       }),
-
       ...(updates.important !== undefined && {
         important: updates.important,
       }),
-
       updated_at: new Date().toISOString(),
     };
 
@@ -120,15 +133,12 @@ export function NoteProvider({ children }: NoteProviderProps) {
       .from("notes")
       .update(payload)
       .eq("id", id)
+      .eq("user_id", user.id)
       .select()
       .single();
 
     if (error) {
-      errorLogger.logError("Error al actualizar la nota", error, {
-        context: "NoteProvider",
-        userMessage:
-          "No se pudo actualizar la nota. Por favor, intenta de nuevo.",
-      });
+      console.error("Error al actualizar la nota", error);
       throw error;
     }
 
@@ -140,14 +150,22 @@ export function NoteProvider({ children }: NoteProviderProps) {
   };
 
   const deleteNote = async (id: number) => {
-    const { error } = await supabase.from("notes").delete().eq("id", id);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("No autorizado");
+    }
+
+    const { error } = await supabase
+      .from("notes")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
 
     if (error) {
-      errorLogger.logError("Error al eliminar la nota", error, {
-        context: "NoteProvider",
-        userMessage:
-          "No se pudo eliminar la nota. Por favor, intenta de nuevo.",
-      });
+      console.error("Error al eliminar la nota", error);
       throw error;
     }
 
@@ -163,8 +181,6 @@ export function NoteProvider({ children }: NoteProviderProps) {
         updateNote,
         deleteNote,
         loadNotes,
-        selectedNote,
-        setSelectedNote,
       }}
     >
       {children}

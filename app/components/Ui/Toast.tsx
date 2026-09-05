@@ -12,7 +12,7 @@ export function Toast({ message, variant = "success", icon }: ToastProps) {
 
   return (
     <div
-      className={`fixed right-5 top-2 z-50 flex items-center gap-2 rounded-lg border px-4 py-3 text-lg shadow-lg ${
+      className={`fixed right-5 top-2 z-50 flex items-center gap-2 rounded-lg border px-4 py-3 text-base shadow-lg ${
         isError
           ? "border-red-500 bg-red-500 text-neutral-100"
           : "border-emerald-500 bg-emerald-500 text-neutral-100"

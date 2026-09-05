@@ -7,7 +7,7 @@ import { NoteListProps } from "@/app/types/notes";
 
 export function NoteList({
   notes,
-  currentNote,
+  selectedNote,
   isNewNote,
   handleSelectNote,
 }: NoteListProps) {
@@ -48,7 +48,7 @@ export function NoteList({
             key={note.id}
             onClick={() => handleSelectNote(note)}
             className={`relative min-w-[120px] max-w-[180px] cursor-pointer rounded-lg border bg-neutral-900/60 p-3 transition hover:border-amber-500/60 ${
-              currentNote?.id === note.id && !isNewNote
+              selectedNote?.id === note.id && !isNewNote
                 ? "border-amber-500/60"
                 : "border-neutral-700"
             }`}

@@ -14,22 +14,19 @@ const colorClasses = {
 
 export function SectionHeader({
   title,
-  description,
   icon: Icon,
   color,
 }: SectionHeaderProps) {
   return (
     <div className="min-w-0">
       <h2
-        className={`flex items-center gap-2 text-3xl font-semibold transition ${
+        className={`flex items-center gap-2 text-2xl font-semibold transition ${
           colorClasses[color]
         }`}
       >
-        <Icon size={30} />
+        <Icon size={25} />
         {title}
       </h2>
-
-      <p className="mt-1 text-lg text-neutral-500">{description}</p>
     </div>
   );
 }

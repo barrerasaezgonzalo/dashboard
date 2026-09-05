@@ -1,49 +1,43 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { isDateOverdue } from "@/app/utils";
-import type { Task } from "@/app/types";
-import { useTask } from "./useTask";
+import { useState } from "react";
 
-export function useTaskItem(task: Task) {
+import type {
+  Task,
+  TaskGroupConfig,
+  TaskStatus,
+  TaskStatusOption,
+} from "@/app/types";
+import { isDateOverdue } from "@/app/utils";
+
+export function useTaskItem(
+  task: Task,
+  taskGroupConfig: TaskGroupConfig[],
+  getNextStatus: (status: TaskStatus) => TaskStatus,
+) {
   const [confirming, setConfirming] = useState(false);
-  const { taskGroupConfig, getNextStatus } = useTask();
-  const statusMenuRef = useRef<HTMLDivElement>(null);
+
   const overdue =
-    task.status !== "done" && !!task.date && isDateOverdue(task.date);
-  const nextStatus = getNextStatus(task.status);
+    !!task.date && task.status !== "done" && isDateOverdue(task.date);
 
   const currentStatus =
     taskGroupConfig.find((option) => option.status === task.status) ??
     taskGroupConfig[0];
 
-  const availableStatusOptions = taskGroupConfig.filter(
-    (option) => option.status !== task.status,
-  );
-
-  useEffect(() => {
-    if (!confirming) return;
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        statusMenuRef.current &&
-        !statusMenuRef.current.contains(event.target as Node)
-      ) {
-        setConfirming(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [confirming]);
+  const availableStatusOptions: TaskStatusOption[] = taskGroupConfig
+    .filter((option) => option.status !== task.status)
+    .map((option) => ({
+      status: option.status,
+      title: option.title,
+      className: option.className,
+    }));
 
   return {
     overdue,
     confirming,
     setConfirming,
-    nextStatus,
     currentStatus,
     availableStatusOptions,
-    statusMenuRef,
+    getNextStatus,
   };
 }

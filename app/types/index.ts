@@ -3,7 +3,4 @@ export * from "./ui";
 export * from "./notes";
 export * from "./expenses";
 export * from "./habits";
-export * from "./wellness";
 export * from "./calendar";
-export * from "./files";
-export * from "./learning";

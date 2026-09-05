@@ -5,11 +5,8 @@ import { AuthProvider } from "./providers/AuthProvider";
 import { NoteProvider } from "./providers/NoteProvider";
 import { ExpenseProvider } from "./providers/ExpenseProvider";
 import { HabitProvider } from "./providers/HabitProvider";
-import { WellnessProvider } from "./providers/WellnessProvider";
-import { ErrorProvider } from "./providers/ErrorProvider";
-import "./globals.css";
 import { CalendarProvider } from "./providers/CalendarProvider";
-import { LearningProvider } from "./providers/LearningProvider";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,27 +25,21 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
+      lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <ErrorProvider>
-          <AuthProvider>
-            <ExpenseProvider>
-              <NoteProvider>
-                <HabitProvider>
-                  <WellnessProvider>
-                    <CalendarProvider>
-                      <TaskProvider>
-                        <LearningProvider>{children}</LearningProvider>
-                      </TaskProvider>
-                    </CalendarProvider>
-                  </WellnessProvider>
-                </HabitProvider>
-              </NoteProvider>
-            </ExpenseProvider>
-          </AuthProvider>
-        </ErrorProvider>
+        <AuthProvider>
+          <ExpenseProvider>
+            <NoteProvider>
+              <HabitProvider>
+                <CalendarProvider>
+                  <TaskProvider>{children}</TaskProvider>
+                </CalendarProvider>
+              </HabitProvider>
+            </NoteProvider>
+          </ExpenseProvider>
+        </AuthProvider>
       </body>
     </html>
   );

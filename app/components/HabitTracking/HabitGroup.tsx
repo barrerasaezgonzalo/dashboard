@@ -11,7 +11,7 @@ export function HabitGroup({
   return (
     <div className="p-4">
       {habits.length > 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-1">
           {habits.map((habit) => (
             <HabitItem
               key={habit.id}

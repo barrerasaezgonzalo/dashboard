@@ -25,9 +25,7 @@ export function TaskModal(props: TaskModalProps) {
   if (!props.isOpen) {
     return null;
   }
-
-  const invalidTitle = isInvalidTitle(title);
-  const disabled = saving || invalidTitle;
+  const disabled = saving || isInvalidTitle(title);
 
   return (
     <div

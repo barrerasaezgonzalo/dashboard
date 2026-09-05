@@ -1,10 +1,10 @@
 "use client";
 
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { NoteContext } from "@/app/providers/NoteProvider";
 import type { Note } from "@/app/types";
-import { isInvalidTitle } from "../utils";
+import { isInvalidTitle, showResponseMessage } from "../utils";
 
 export function useNote() {
   const context = useContext(NoteContext);
@@ -13,25 +13,18 @@ export function useNote() {
     throw new Error("useNote debe usarse dentro de NoteProvider");
   }
 
-  const {
-    updateNote,
-    notes,
-    createNote,
-    deleteNote,
-    selectedNote,
-    setSelectedNote,
-  } = context;
+  const { updateNote, notes, createNote, deleteNote } = context;
 
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [important, setImportant] = useState(false);
   const [isNewNote, setIsNewNote] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const currentNote = selectedNote;
+  const [responseOperationMessage, setResponseOperationMessage] = useState("");
+
   const invalidTitle = isInvalidTitle(title);
   const disabledSave = invalidTitle;
-  const [responseOperationMessage, setResponseOperationMessage] = useState("");
 
   useEffect(() => {
     if (isNewNote) {
@@ -53,52 +46,44 @@ export function useNote() {
     setImportant(selectedNote.important ?? false);
   }, [selectedNote, isNewNote]);
 
-  const scroll = (direction: "left" | "right") => {
-    if (!scrollContainerRef.current) {
-      return;
-    }
-
-    scrollContainerRef.current.scrollBy({
-      left: direction === "left" ? -300 : 300,
-      behavior: "smooth",
-    });
-  };
-
   const handleSave = async () => {
     if (invalidTitle) {
       return;
     }
 
-    if (isNewNote || !currentNote) {
+    if (isNewNote || !selectedNote) {
       await createNote({
         title: title.trim(),
         content,
         important,
       });
-      setResponseOperationMessage("Nota creada correctamente.");
-      setTimeout(() => {
-        setResponseOperationMessage("");
-      }, 4000);
+
+      showResponseMessage(
+        setResponseOperationMessage,
+        "Nota creada correctamente.",
+      );
+
       setIsNewNote(false);
       return;
     }
 
-    await updateNote(currentNote.id, {
+    await updateNote(selectedNote.id, {
       title: title.trim(),
       content,
       important,
     });
 
     setSelectedNote({
-      ...currentNote,
+      ...selectedNote,
       title: title.trim(),
       content,
       important,
     });
-    setResponseOperationMessage("Nota actualizada correctamente.");
-    setTimeout(() => {
-      setResponseOperationMessage("");
-    }, 4000);
+
+    showResponseMessage(
+      setResponseOperationMessage,
+      "Nota actualizada correctamente.",
+    );
   };
 
   const handleNewNote = () => {
@@ -115,16 +100,16 @@ export function useNote() {
   };
 
   const handleDelete = async () => {
-    if (!currentNote) {
+    if (!selectedNote) {
       return;
     }
 
-    await deleteNote(currentNote.id);
+    await deleteNote(selectedNote.id);
 
-    setResponseOperationMessage("Nota eliminada correctamente.");
-    setTimeout(() => {
-      setResponseOperationMessage("");
-    }, 4000);
+    showResponseMessage(
+      setResponseOperationMessage,
+      "Nota eliminada correctamente.",
+    );
 
     setIsDeleteOpen(false);
     setSelectedNote(null);
@@ -134,7 +119,7 @@ export function useNote() {
   };
 
   const handleImportant = () => {
-    if (!currentNote) {
+    if (!selectedNote) {
       return;
     }
 
@@ -151,19 +136,17 @@ export function useNote() {
 
   return {
     notes,
-    currentNote,
+    selectedNote,
     title,
     content,
     important,
-    setTitle,
-    setContent,
-    selectedNote,
     isNewNote,
     isDeleteOpen,
     invalidTitle,
     disabledSave,
-    scrollContainerRef,
-    scroll,
+    responseOperationMessage,
+    setTitle,
+    setContent,
     handleSave,
     handleNewNote,
     handleSelectNote,
@@ -171,6 +154,5 @@ export function useNote() {
     handleImportant,
     handleOpenDelete,
     handleCloseDelete,
-    responseOperationMessage,
   };
 }

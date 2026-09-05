@@ -18,6 +18,8 @@ export type TaskItemProps = {
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
   confirming?: boolean;
+  taskGroupConfig: TaskGroupConfig[];
+  getNextStatus: (status: TaskStatus) => TaskStatus;
 };
 
 export type TaskFormData = {
@@ -38,13 +40,6 @@ export type TaskStatusOption = {
   status: TaskStatus;
   title: string;
   className: string;
-};
-
-export type TaskStatusMenuProps = {
-  taskId: number;
-  options: TaskStatusOption[];
-  onChangeStatus: (taskId: number, status: TaskStatus) => void;
-  onClose: () => void;
 };
 
 export type TaskGroupConfig = {

@@ -26,15 +26,6 @@ export type HabitItemProps = {
   onDelete: (habit: Habit) => void;
 };
 
-export type HabitDayProps = {
-  habit: Habit;
-  index: number;
-  enabled: boolean;
-  currentDay: number;
-  weekDay: string;
-  onToggleCompleted: (habit: Habit, index: number) => void;
-};
-
 export type HabitModalProps = {
   isOpen: boolean;
   habit: Habit | null;

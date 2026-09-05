@@ -26,12 +26,18 @@ export function HabitModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
     >
       <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="habit-modal-title"
         onClick={(event) => event.stopPropagation()}
         className="w-full max-w-md rounded-xl border border-neutral-700 bg-neutral-800"
       >
         <header className="flex items-center justify-between border-b border-neutral-700 px-5 py-4">
           <div>
-            <h3 className="font-semibold text-neutral-200 text-xl">
+            <h3
+              id="habit-modal-title"
+              className="text-xl font-semibold text-neutral-200"
+            >
               {habit ? "Editar hábito" : "Agregar hábito"}
             </h3>
           </div>
@@ -40,6 +46,7 @@ export function HabitModal({
             type="button"
             onClick={onClose}
             title="Cerrar"
+            aria-label="Cerrar modal"
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-neutral-600 text-neutral-300 transition hover:bg-neutral-500 hover:text-white"
           >
             <X size={18} />
@@ -58,7 +65,7 @@ export function HabitModal({
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Ej: Caminar 30 min"
-              className={`h-11 w-full rounded-lg border bg-transparent px-3 text-base text-white outline-none transition placeholder:text-neutral-500 border-neutral-600`}
+              className="h-11 w-full rounded-lg border border-neutral-600 bg-transparent px-3 text-base text-white outline-none transition placeholder:text-neutral-500"
             />
           </label>
 
@@ -67,9 +74,7 @@ export function HabitModal({
               Días <span className="ml-1 text-orange-400">*</span>
             </span>
 
-            <div
-              className={`flex flex-wrap gap-2 rounded-lg border p-2 border-transparent`}
-            >
+            <div className="flex flex-wrap gap-2 rounded-lg border border-transparent p-2">
               {weekDays.map((day, index) => (
                 <button
                   key={day}
@@ -101,9 +106,7 @@ export function HabitModal({
             type="button"
             disabled={invalidHabit || saving}
             onClick={onSubmit}
-            className={`cursor-pointer rounded-lg px-4 py-2 text-base font-medium text-white transition bg-cyan-500 hover:bg-cyan-600 
-                disabled:opacity-40 disabled:cursor-not-allowed
-            }`}
+            className="cursor-pointer rounded-lg bg-cyan-500 px-4 py-2 text-base font-medium text-white transition hover:bg-cyan-600 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {saving ? "Guardando..." : habit ? "Guardar" : "Crear"}
           </button>

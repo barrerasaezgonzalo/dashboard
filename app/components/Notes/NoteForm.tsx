@@ -8,7 +8,7 @@ export function NoteForm({
   setTitle,
   setContent,
   handleImportant,
-  currentNote,
+  selectedNote,
   isNewNote,
   important,
   handleSave,
@@ -18,11 +18,16 @@ export function NoteForm({
   return (
     <>
       <div className="mx-4 mt-4 flex flex-col gap-2">
+        <label htmlFor="note-title" className="sr-only">
+          Título de la nota
+        </label>
+
         <input
+          id="note-title"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           placeholder="Título de la nota"
-          className={`w-full rounded-lg border bg-neutral-900/60 p-3 text-lg leading-6 text-neutral-400 outline-none transition placeholder:text-neutral-600 border-neutral-700`}
+          className="w-full rounded-lg border border-neutral-700 bg-neutral-900/60 p-3 text-lg leading-6 text-neutral-400 outline-none transition placeholder:text-neutral-600"
         />
       </div>
 
@@ -39,7 +44,7 @@ export function NoteForm({
         <button
           type="button"
           onClick={handleImportant}
-          disabled={isNewNote || !currentNote}
+          disabled={isNewNote || !selectedNote}
           title="Marcar como importante"
           aria-label="Marcar como importante"
           className={`flex h-8 w-8 shrink-0 items-center justify-center transition disabled:cursor-not-allowed disabled:border-neutral-700 disabled:text-neutral-500 disabled:opacity-50 ${
@@ -68,7 +73,7 @@ export function NoteForm({
         <button
           type="button"
           onClick={handleOpenDelete}
-          disabled={!currentNote || isNewNote}
+          disabled={!selectedNote || isNewNote}
           title="Eliminar nota"
           aria-label="Eliminar nota"
           className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center text-neutral-400 transition disabled:cursor-not-allowed disabled:opacity-30 hover:text-red-400"

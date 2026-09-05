@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Lock,
   MoveRight,
   SquarePen,
   Trash2,
@@ -8,7 +9,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { HabitDay } from "./HabitDay";
 import { weekDays } from "@/app/constants";
 import { HabitItemProps } from "@/app/types/habits";
 
@@ -25,6 +25,7 @@ export function HabitItem({
 
   const isBetter = completedThisWeek > habit.last_completed;
   const isWorse = completedThisWeek < habit.last_completed;
+
   return (
     <article className="relative rounded-lg border border-neutral-700 bg-neutral-900/20 px-3 py-3 transition hover:bg-neutral-700/20">
       <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
@@ -43,11 +44,11 @@ export function HabitItem({
             }`}
           >
             {isBetter ? (
-              <TrendingUp size={25} />
+              <TrendingUp size={18} />
             ) : isWorse ? (
-              <TrendingDown size={25} />
+              <TrendingDown size={18} />
             ) : (
-              <MoveRight size={25} />
+              <MoveRight size={18} />
             )}
           </div>
 
@@ -57,7 +58,7 @@ export function HabitItem({
             onClick={() => onEdit(habit)}
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-neutral-400 transition hover:text-white"
           >
-            <SquarePen size={25} />
+            <SquarePen size={18} />
           </button>
 
           <button
@@ -66,23 +67,45 @@ export function HabitItem({
             onClick={() => onDelete(habit)}
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-neutral-400 transition hover:text-red-400"
           >
-            <Trash2 size={25} />
+            <Trash2 size={18} />
           </button>
         </div>
       </div>
 
       <div className="mt-3 flex items-center gap-2">
-        {habit.days.map((enabled, index) => (
-          <HabitDay
-            key={index}
-            habit={habit}
-            index={index}
-            enabled={enabled}
-            currentDay={currentDay}
-            weekDay={weekDays[index]}
-            onToggleCompleted={onToggleCompleted}
-          />
-        ))}
+        {habit.days.map((enabled, index) => {
+          const future = index > currentDay;
+          const status = habit.completed[index];
+          const disabled = !enabled || future;
+          const weekDay = weekDays[index];
+
+          return (
+            <button
+              key={index}
+              type="button"
+              disabled={disabled}
+              aria-label={
+                !enabled
+                  ? `${weekDay} no está habilitado`
+                  : future
+                    ? `${weekDay} todavía no disponible`
+                    : `${weekDay}: ${status}`
+              }
+              onClick={() => onToggleCompleted(habit, index)}
+              className={`flex h-7 w-7 items-center justify-center rounded-lg border transition ${
+                disabled
+                  ? "cursor-not-allowed border-neutral-800 text-neutral-700"
+                  : status === "completed"
+                    ? "cursor-pointer border-green-500 bg-green-500/20 text-green-400"
+                    : status === "failed"
+                      ? "cursor-pointer border-red-500 bg-red-500/20 text-red-400"
+                      : "cursor-pointer border-neutral-700 text-neutral-400"
+              }`}
+            >
+              {!enabled ? <Lock size={14} /> : weekDay}
+            </button>
+          );
+        })}
       </div>
     </article>
   );

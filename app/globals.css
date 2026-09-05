@@ -18,10 +18,6 @@
   }
 }
 
-@theme {
-  --color-notifications: #d946ef;
-}
-
 body {
   background: var(--background);
   color: var(--foreground);

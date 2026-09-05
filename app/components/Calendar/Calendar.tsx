@@ -1,93 +1,94 @@
 "use client";
 
 import { CalendarDays, SquarePlus } from "lucide-react";
+
 import { DashboardSection } from "../Ui/DashboardSection";
 import { SectionHeader } from "../Ui/SectionHeader";
-import { CalendarModal } from "./CalendarModal";
-import { useCalendar } from "@/app/hooks/useCalendar";
-import { Toast } from "../Ui/Toast";
 import { SectionActionButton } from "../Ui/SectionActionButton";
-import { CalendarGroup } from "./CalendarGroups";
+import { Toast } from "../Ui/Toast";
+
+import { useCalendar } from "@/app/hooks/useCalendar";
+import { useCalendarActions } from "@/app/hooks/useCalendarActions";
+
+import { CalendarModal } from "./CalendarModal";
+import { CalendarGroup } from "./CalendarGroup";
 
 export function Calendar() {
   const {
     visibleEvents,
-    currentDate,
+    monthLabel,
+    dateFormatter,
+    dayFormatter,
+    handleCurrentMonth,
+    handleNextMonth,
+    handlePreviousMonth,
+  } = useCalendar();
+
+  const {
+    responseOperationMessage,
     isModalOpen,
+    selectedEvent,
     title,
     date,
     time,
-    setTitle,
     summary,
-    setSummary,
+    eventToDelete,
+    setTitle,
     setDate,
     setTime,
-    setIsModalOpen,
-    handleNextMonth,
-    handleSubmit,
-    handlePreviousMonth,
+    setSummary,
+    setEventToDelete,
     handleNewEvent,
     handleEditEvent,
-    deleteEvent,
-    handleCurrentMonth,
-    selectedEvent,
-    responseOperationMessage,
-    dateFormatter,
-    dayFormatter,
-    monthFormatter,
-  } = useCalendar();
+    handleCloseModal,
+    handleSubmit,
+    handleDeleteEvent,
+  } = useCalendarActions();
 
   return (
-    <>
-      <DashboardSection
-        id="calendar"
-        button={
-          <SectionActionButton
-            onClick={handleNewEvent}
-            icon={SquarePlus}
-            color="orange"
-          />
-        }
-        header={
-          <SectionHeader
-            title="Calendario"
-            description="Próximos eventos y recordatorios."
-            icon={CalendarDays}
-            color="orange"
-          />
-        }
-      >
-        <CalendarGroup
-          events={visibleEvents}
-          currentDate={currentDate}
-          onPreviousMonth={handlePreviousMonth}
-          onCurrentMonth={handleCurrentMonth}
-          onNextMonth={handleNextMonth}
-          onEdit={handleEditEvent}
-          onDelete={deleteEvent}
-          dateFormatter={dateFormatter}
-          dayFormatter={dayFormatter}
-          monthFormatter={monthFormatter}
+    <DashboardSection
+      id="calendar"
+      button={
+        <SectionActionButton
+          onClick={handleNewEvent}
+          icon={SquarePlus}
+          color="orange"
         />
-      </DashboardSection>
+      }
+      header={
+        <SectionHeader title="Calendario" icon={CalendarDays} color="orange" />
+      }
+    >
+      <CalendarGroup
+        events={visibleEvents}
+        monthLabel={monthLabel}
+        onPreviousMonth={handlePreviousMonth}
+        onCurrentMonth={handleCurrentMonth}
+        onNextMonth={handleNextMonth}
+        onEdit={handleEditEvent}
+        onDelete={handleDeleteEvent}
+        eventToDelete={eventToDelete}
+        setEventToDelete={setEventToDelete}
+        dateFormatter={dateFormatter}
+        dayFormatter={dayFormatter}
+      />
 
-      {isModalOpen && (
-        <CalendarModal
-          handleCloseModal={() => setIsModalOpen(false)}
-          handleSubmit={handleSubmit}
-          title={title}
-          setTitle={setTitle}
-          date={date}
-          setDate={setDate}
-          time={time}
-          setTime={setTime}
-          isEditing={Boolean(selectedEvent)}
-          summary={summary}
-          setSummary={setSummary}
-        />
-      )}
+      <CalendarModal
+        isOpen={isModalOpen}
+        selectedEvent={selectedEvent}
+        title={title}
+        date={date}
+        time={time}
+        summary={summary}
+        setTitle={setTitle}
+        setDate={setDate}
+        setTime={setTime}
+        setSummary={setSummary}
+        onClose={handleCloseModal}
+        onSubmit={handleSubmit}
+      />
 
       <Toast message={responseOperationMessage} />
-    </>
+    </DashboardSection>
   );
 }

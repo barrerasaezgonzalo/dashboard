@@ -1,9 +1,10 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
+
 import { HabitContext } from "@/app/providers/HabitProvider";
-import { Habit, HabitDayStatus } from "../types";
-import { showResponseMessage } from "../utils";
+import type { Habit } from "@/app/types";
+import { showResponseMessage } from "@/app/utils";
 
 export function useHabit() {
   const context = useContext(HabitContext);
@@ -12,14 +13,7 @@ export function useHabit() {
     throw new Error("useHabit debe usarse dentro de HabitProvider");
   }
 
-  const {
-    habits,
-    loading,
-    createHabit,
-    updateHabit,
-    updateHabitCompleted,
-    deleteHabit,
-  } = context;
+  const { habits, loading, createHabit, updateHabit, deleteHabit } = context;
 
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,28 +58,6 @@ export function useHabit() {
       ? Math.round((totalCompleted / totalAvailable) * 100)
       : 0;
 
-  const handleToggleCompleted = async (habit: Habit, index: number) => {
-    const completed: HabitDayStatus[] = habit.completed.map(
-      (status, dayIndex) => {
-        if (dayIndex !== index) {
-          return status;
-        }
-
-        if (status === "pending") {
-          return "completed";
-        }
-
-        if (status === "completed") {
-          return "failed";
-        }
-
-        return "pending";
-      },
-    );
-
-    await updateHabitCompleted(habit.id, completed);
-  };
-
   const handleToggleDay = (index: number) => {
     setDays((current) =>
       current.map((day, dayIndex) => (dayIndex === index ? !day : day)),
@@ -119,31 +91,34 @@ export function useHabit() {
 
     setSaving(true);
 
-    if (selectedHabit) {
-      await updateHabit(selectedHabit.id, {
-        name: name.trim(),
-        days,
-      });
+    try {
+      if (selectedHabit) {
+        await updateHabit(selectedHabit.id, {
+          name: name.trim(),
+          days,
+        });
 
-      showResponseMessage(
-        setResponseOperationMessage,
-        "Hábito actualizado correctamente.",
-      );
-    } else {
-      await createHabit({
-        name: name.trim(),
-        days,
-      });
+        showResponseMessage(
+          setResponseOperationMessage,
+          "Hábito actualizado correctamente.",
+        );
+      } else {
+        await createHabit({
+          name: name.trim(),
+          days,
+        });
 
-      showResponseMessage(
-        setResponseOperationMessage,
-        "Hábito creado correctamente.",
-      );
+        showResponseMessage(
+          setResponseOperationMessage,
+          "Hábito creado correctamente.",
+        );
+      }
+
+      setIsModalOpen(false);
+      setSelectedHabit(null);
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
-    setIsModalOpen(false);
-    setSelectedHabit(null);
   };
 
   const handleDeleteHabit = async () => {
@@ -183,18 +158,14 @@ export function useHabit() {
     progress,
     currentDay,
     selectedHabit,
-    setSelectedHabit,
     isModalOpen,
-    setIsModalOpen,
     isDeleteModalOpen,
-    setIsDeleteModalOpen,
     responseOperationMessage,
     name,
     setName,
     days,
     saving,
     invalidHabit,
-    handleToggleCompleted,
     handleToggleDay,
     handleOpenCreate,
     handleOpenEdit,
@@ -202,5 +173,6 @@ export function useHabit() {
     handleCloseModal,
     handleSaveHabit,
     handleDeleteHabit,
+    setIsDeleteModalOpen,
   };
 }

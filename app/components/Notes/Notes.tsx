@@ -1,19 +1,19 @@
 "use client";
 
 import { SquarePlus, SquareText } from "lucide-react";
+
 import { ConfirmModal } from "@/app/components/Ui/ConfirmModal";
 import { useNote } from "@/app/hooks/useNote";
-import { NoteForm } from "./NoteForm";
-import { NoteList } from "./NoteList";
 import { SectionHeader } from "../Ui/SectionHeader";
 import { DashboardSection } from "../Ui/DashboardSection";
 import { Toast } from "../Ui/Toast";
 import { SectionActionButton } from "../Ui/SectionActionButton";
+import { NoteGroup } from "./NoteGroup";
 
 export function Notes() {
   const {
     notes,
-    currentNote,
+    selectedNote,
     title,
     content,
     important,
@@ -44,17 +44,11 @@ export function Notes() {
             color="amber"
           />
         }
-        header={
-          <SectionHeader
-            title="Notas"
-            description="Escribe ideas rápidas!"
-            icon={SquareText}
-            color="amber"
-          />
-        }
+        header={<SectionHeader title="Notas" icon={SquareText} color="amber" />}
       >
-        <NoteForm
-          currentNote={currentNote}
+        <NoteGroup
+          notes={notes}
+          selectedNote={selectedNote}
           title={title}
           content={content}
           important={important}
@@ -64,14 +58,9 @@ export function Notes() {
           setTitle={setTitle}
           setContent={setContent}
           handleSave={handleSave}
+          handleSelectNote={handleSelectNote}
           handleImportant={handleImportant}
           handleOpenDelete={handleOpenDelete}
-        />
-        <NoteList
-          notes={notes}
-          currentNote={currentNote}
-          isNewNote={isNewNote}
-          handleSelectNote={handleSelectNote}
         />
       </DashboardSection>
 
@@ -85,6 +74,7 @@ export function Notes() {
         onClose={handleCloseDelete}
         onConfirm={handleDelete}
       />
+
       <Toast message={responseOperationMessage} />
     </>
   );

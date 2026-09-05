@@ -38,14 +38,7 @@ export function Tasks() {
           color="blue"
         />
       }
-      header={
-        <SectionHeader
-          title="Tareas"
-          description="Gestiona el estado de tus tareas."
-          icon={ListTodo}
-          color="blue"
-        />
-      }
+      header={<SectionHeader title="Tareas" icon={ListTodo} color="blue" />}
     >
       <TaskGroup
         taskGroupConfig={taskGroupConfig}

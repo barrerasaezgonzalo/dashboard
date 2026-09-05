@@ -7,7 +7,7 @@ export type Note = {
 };
 
 export type NoteFormProps = {
-  currentNote: Note | null;
+  selectedNote: Note | null;
   title: string;
   content: string;
   important: boolean;
@@ -23,7 +23,7 @@ export type NoteFormProps = {
 
 export type NoteListProps = {
   notes: Note[];
-  currentNote: Note | null;
+  selectedNote: Note | null;
   isNewNote: boolean;
   handleSelectNote: (note: Note) => void;
 };

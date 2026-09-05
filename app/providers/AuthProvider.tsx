@@ -1,16 +1,13 @@
 "use client";
 
 import { createContext, ReactNode, useEffect, useState } from "react";
-
 import type { User } from "@supabase/supabase-js";
-import { supabase } from "@/app/lib/supabase";
-import { errorLogger } from "@/app/lib/errorLogger";
+import { supabase } from "@/app/lib/supabaseClient";
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
-
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -23,17 +20,21 @@ type AuthProviderProps = {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-      setUser(user);
-      setLoading(false);
+        setUser(user);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadUser();
@@ -54,15 +55,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}`,
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
     if (error) {
-      errorLogger.logError("Error al iniciar sesión con Google", error, {
-        context: "AuthProvider",
-        userMessage: "No se pudo iniciar sesión. Por favor, intenta de nuevo.",
-      });
+      console.error("Error al iniciar sesión con Google", error);
+
       throw error;
     }
   };
@@ -71,10 +70,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      errorLogger.logError("Error al cerrar sesión", error, {
-        context: "AuthProvider",
-        userMessage: "No se pudo cerrar sesión. Por favor, intenta de nuevo.",
-      });
+      console.error("Error al cerrar sesión", error);
+
       throw error;
     }
 
@@ -87,7 +84,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         user,
         loading,
         isAuthenticated: Boolean(user),
-
         loginWithGoogle,
         logout,
       }}

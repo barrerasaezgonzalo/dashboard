@@ -53,25 +53,6 @@ vi.mock("@/app/hooks/useHabit", () => ({
   }),
 }));
 
-// Mock global para useWellness
-vi.mock("@/app/hooks/useWellness", () => ({
-  useWellness: () => ({
-    activePlan: null,
-    selectedPlan: null,
-    planHistory: [],
-    loading: false,
-    selectPlan: vi.fn(),
-    clearSelectedPlan: vi.fn(),
-    createCheckIn: vi.fn(),
-    createPlan: vi.fn(),
-    updatePlanTaskStatus: vi.fn(),
-    updatePlanStatus: vi.fn(),
-    loadPlanHistory: vi.fn(),
-    deletePlan: vi.fn(),
-    responseOperationMessage: "",
-  }),
-}));
-
 // Mock global para useLearning
 vi.mock("@/app/hooks/useLearning", () => ({
   useLearning: () => ({

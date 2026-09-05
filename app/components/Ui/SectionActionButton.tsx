@@ -21,12 +21,16 @@ export function SectionActionButton({
   icon: Icon,
   color = "blue",
 }: SectionActionButtonProps) {
+  if (!Icon) {
+    return <div className="ml-auto mb-2 h-10 w-10 shrink-0" />;
+  }
+
   return (
     <button
       type="button"
       onClick={onClick}
       className={`
-        ml-auto flex h-12 w-12 shrink-0 cursor-pointer
+        ml-auto mb-2 flex h-10 w-10 shrink-0 cursor-pointer
         items-center justify-center rounded-lg
         border border-neutral-700 bg-neutral-900/60
         transition
