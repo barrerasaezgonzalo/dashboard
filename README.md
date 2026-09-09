@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dashboard
 
-## Getting Started
+Dashboard es una aplicación personal para organizar tareas, eventos, gastos, hábitos y notas desde un solo lugar.
 
-First, run the development server:
+Está pensada para uso diario, con una interfaz simple, rápida y responsive que permite revisar y actualizar información sin cambiar entre varias herramientas.
+
+## Características
+
+- Gestión de tareas por estados
+- Creación, edición y eliminación de tareas
+- Calendario con eventos
+- Gestión de gastos
+- Seguimiento de hábitos
+- Notas rápidas
+- Navegación entre secciones
+- Scroll a secciones específicas
+- Autenticación de usuarios
+- Persistencia de datos con Supabase
+- Diseño responsive para desktop y mobile
+
+## Módulos
+
+### Tareas
+
+Permite organizar tareas según su estado y moverlas a medida que avanzan.
+
+Incluye:
+
+- creación de tareas
+- edición
+- eliminación
+- cambio de estado
+- agrupación visual por columnas
+
+### Calendario
+
+Permite registrar y consultar eventos por fecha.
+
+Incluye:
+
+- navegación entre meses
+- creación de eventos
+- edición
+- eliminación
+- visualización de próximos eventos
+
+### Gastos
+
+Permite registrar y consultar gastos personales desde el dashboard.
+
+### Hábitos
+
+Permite llevar un seguimiento simple de hábitos y progreso diario.
+
+### Notas
+
+Espacio para guardar información rápida y tenerla disponible dentro del mismo dashboard.
+
+## Tecnologías
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Supabase
+- lucide-react
+
+## Arquitectura
+
+El proyecto utiliza una estructura basada en providers y hooks separados por dominio.
+
+Esto permite mantener la lógica de cada módulo aislada de sus componentes de presentación y facilita el mantenimiento de la aplicación.
+
+## Desarrollo local
+
+Instala las dependencias:
+
+```bash
+npm install
+```
+
+Crea un archivo `.env.local` con las variables necesarias:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+
+Inicia el servidor de desarrollo:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La aplicación estará disponible en:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Verificación
 
-## Learn More
+Antes de publicar una nueva versión:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run lint
+npm run build
+npx knip
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estado
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Versión funcional para uso diario.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+El dashboard reúne en una sola interfaz las herramientas principales de organización personal y continúa evolucionando a partir de su uso real.

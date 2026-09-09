@@ -15,7 +15,7 @@ export function TaskGroup({
       {taskGroupConfig.map((group) => (
         <section
           key={group.status}
-          className="rounded-xl border border-neutral-700 bg-neutral-900/40 p-3"
+          className="min-w-[210px] xl:min-w-[390px] rounded-xl border border-neutral-700 bg-neutral-900/40 p-3"
         >
           <p
             className={`mb-3 text-sm font-medium text-neutral-200 rounded-lg px-4 w-fit ${group.className}`}
@@ -24,7 +24,7 @@ export function TaskGroup({
           </p>
 
           {group.tasks.length > 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-2 ">
               {group.tasks.map((task) => (
                 <TaskItem
                   key={task.id}
