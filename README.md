@@ -113,3 +113,14 @@ npx knip
 Versión funcional para uso diario.
 
 El dashboard reúne en una sola interfaz las herramientas principales de organización personal y continúa evolucionando a partir de su uso real.
+
+## Capturas
+
+<img width="1842" height="923" alt="Captura desde 2026-09-09 09-44-48" src="https://github.com/user-attachments/assets/3c3ecb23-631e-423c-893a-ec00c49334d7" />
+<img width="1842" height="923" alt="Captura desde 2026-09-09 09-45-43" src="https://github.com/user-attachments/assets/70ae74d3-2cf4-46c2-beb8-12b28378a992" />
+<img width="1842" height="923" alt="Captura desde 2026-09-09 09-46-02" src="https://github.com/user-attachments/assets/c7f923d4-10a8-453a-a668-87f21644791e" />
+<img width="1842" height="923" alt="Captura desde 2026-09-09 09-46-10" src="https://github.com/user-attachments/assets/06cceddf-5fa6-4a96-8957-5ae9b7c27874" />
+
+## Vercel URL
+
+https://dashboard-dusky-omega-73.vercel.app/login
