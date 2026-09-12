@@ -1,4 +1,4 @@
-"use client";
+  "use client";
 
 import { NoteForm } from "./NoteForm";
 import { NoteList } from "./NoteList";
